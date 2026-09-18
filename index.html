@@ -3,596 +3,666 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft Coordinate Converter | VirtuaUtils</title>
-    <meta name="description" content="Convert Minecraft Overworld coordinates to Nether coordinates and back instantly.">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+<title>Minecraft Coordinate Converter | VirtuaUtils</title>
+<meta name="description" content="Convert Minecraft Overworld coordinates to Nether coordinates and back instantly.">
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    :root {
+        --bg: #070b0a;
+        --card: rgba(15, 23, 20, 0.82);
+        --card-border: rgba(92, 255, 158, 0.12);
+        --text: #f1fff6;
+        --muted: #91a69a;
+        --green: #5cff9e;
+        --input: #0c1410;
+    }
+    body {
+        min-height: 100vh;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+            radial-gradient(circle at 20% 20%, rgba(44, 255, 135, 0.08), transparent 30%),
+            radial-gradient(circle at 80% 70%, rgba(0, 255, 140, 0.06), transparent 30%),
+            var(--bg);
+        overflow-x: hidden;
+    }
+    body::before {
+        content: "";
+        position: fixed;
+        inset: -50%;
+        z-index: -1;
+        background:
+            linear-gradient(
+                115deg,
+                transparent 40%,
+                rgba(92, 255, 158, 0.025) 50%,
+                transparent 60%
+            );
+        animation: backgroundMove 12s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes backgroundMove {
+        from {
+            transform: translateX(-10%) rotate(0deg);
         }
-        :root {
-            --bg: #070b0a;
-            --card: rgba(15, 23, 20, 0.82);
-            --card-border: rgba(92, 255, 158, 0.12);
-            --text: #f1fff6;
-            --muted: #91a69a;
-            --green: #5cff9e;
-            --input: #0c1410;
+        to {
+            transform: translateX(10%) rotate(360deg);
         }
-        body {
-            min-height: 100vh;
-            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at 20% 20%, rgba(44, 255, 135, 0.08), transparent 30%),
-                radial-gradient(circle at 80% 70%, rgba(0, 255, 140, 0.06), transparent 30%),
-                var(--bg);
-            overflow-x: hidden;
+    }
+    nav {
+        width: 100%;
+        padding: 22px 7%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .logo {
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .logo span {
+        color: var(--green);
+    }
+    .status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+    }
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 12px var(--green);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
         }
-        body::before {
-            content: "";
-            position: fixed;
-            inset: -50%;
-            z-index: -1;
-            background:
-                linear-gradient(
-                    115deg,
-                    transparent 40%,
-                    rgba(92, 255, 158, 0.025) 50%,
-                    transparent 60%
-                );
-            animation: backgroundMove 12s linear infinite;
-            pointer-events: none;
+        50% {
+            opacity: 0.45;
+            transform: scale(0.75);
         }
-        @keyframes backgroundMove {
-            from {
-                transform: translateX(-10%) rotate(0deg);
-            }
-            to {
-                transform: translateX(10%) rotate(360deg);
-            }
+    }
+    main {
+        width: min(920px, 92%);
+        margin: 70px auto 80px;
+    }
+    .hero {
+        text-align: center;
+        margin-bottom: 45px;
+        animation: fadeUp 0.8s ease forwards;
+    }
+    .hero h1 {
+        font-size: clamp(38px, 7vw, 68px);
+        line-height: 1;
+        letter-spacing: -3px;
+        margin-bottom: 18px;
+    }
+    .hero h1 span {
+        color: var(--green);
+        text-shadow: 0 0 30px rgba(92, 255, 158, 0.25);
+    }
+    .hero p {
+        max-width: 560px;
+        margin: auto;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
         }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .converter {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 28px;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow:
+            0 25px 80px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.025);
+        animation: fadeUp 0.9s ease 0.1s both;
+    }
+    .mode-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    .mode {
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.025);
+        color: var(--muted);
+        padding: 14px;
+        border-radius: 13px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.25s ease;
+    }
+    .mode:hover {
+        border-color: rgba(92,255,158,0.25);
+        transform: translateY(-1px);
+    }
+    .mode.active {
+        background: rgba(92,255,158,0.09);
+        border-color: rgba(92,255,158,0.35);
+        color: var(--green);
+    }
+    .coordinates {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    label {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+    input {
+        width: 100%;
+        padding: 16px;
+        border-radius: 13px;
+        border: 1px solid rgba(255,255,255,0.07);
+        background: var(--input);
+        color: var(--text);
+        outline: none;
+        font-size: 16px;
+        transition: 0.25s ease;
+    }
+    input:focus {
+        border-color: rgba(92,255,158,0.55);
+        box-shadow: 0 0 0 4px rgba(92,255,158,0.06);
+    }
+    input::placeholder {
+        color: #53635a;
+    }
+    .advanced-settings {
+        margin-top: 20px;
+        padding: 18px;
+        border-radius: 15px;
+        background: rgba(255,255,255,0.025);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .advanced-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .advanced-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .advanced-title {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+    }
+    .advanced-description {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+    }
+    .switch {
+        position: relative;
+        flex: 0 0 auto;
+        width: 46px;
+        height: 26px;
+    }
+    .switch input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+    }
+    .switch-track {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.1);
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+    .switch-track::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #b7c5bc;
+        transition: 0.25s ease;
+    }
+    .switch input:checked + .switch-track {
+        background: rgba(92,255,158,0.25);
+        border-color: rgba(92,255,158,0.5);
+    }
+    .switch input:checked + .switch-track::after {
+        transform: translateX(20px);
+        background: var(--green);
+        box-shadow: 0 0 12px rgba(92,255,158,0.45);
+    }
+    .advanced-options {
+        display: none;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .advanced-options.show {
+        display: block;
+    }
+    .setting {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 13px;
+    }
+    .setting:first-child {
+        margin-top: 0;
+    }
+    .setting input {
+        width: auto;
+        accent-color: var(--green);
+        cursor: pointer;
+    }
+    .y-input {
+        display: none;
+        margin-top: 15px;
+    }
+    .y-input.show {
+        display: block;
+    }
+    .setting-note {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+    }
+    .result {
+        margin-top: 22px;
+        padding: 22px;
+        border-radius: 16px;
+        background: rgba(92,255,158,0.045);
+        border: 1px solid rgba(92,255,158,0.12);
+        display: none;
+        animation: resultIn 0.4s ease forwards;
+    }
+    .result.show {
+        display: block;
+    }
+    @keyframes resultIn {
+        from {
+            opacity: 0;
+            transform: scale(0.98) translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    .result-title {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+    .result-coordinates {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--green);
+        letter-spacing: 0.08em;
+        word-break: break-word;
+    }
+    .copy-button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 13px;
+        border: 1px solid rgba(92,255,158,0.2);
+        border-radius: 11px;
+        background: rgba(92,255,158,0.07);
+        color: var(--green);
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+    .copy-button:hover {
+        background: rgba(92,255,158,0.12);
+        transform: translateY(-1px);
+    }
+    .copy-button.copied {
+        background: rgba(92,255,158,0.18);
+    }
+    .note {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+    }
+    .note strong {
+        color: var(--text);
+    }
+    footer {
+        text-align: center;
+        color: #526158;
+        font-size: 12px;
+        padding: 0 20px 35px;
+    }
+    @media (max-width: 600px) {
         nav {
-            width: 100%;
-            padding: 22px 7%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .logo {
-            font-size: 21px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-        .logo span {
-            color: var(--green);
-        }
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--muted);
-            font-size: 13px;
-        }
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--green);
-            box-shadow: 0 0 12px var(--green);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.45;
-                transform: scale(0.75);
-            }
+            padding: 18px 5%;
         }
         main {
-            width: min(920px, 92%);
-            margin: 70px auto 80px;
-        }
-        .hero {
-            text-align: center;
-            margin-bottom: 45px;
-            animation: fadeUp 0.8s ease forwards;
+            margin-top: 45px;
         }
         .hero h1 {
-            font-size: clamp(38px, 7vw, 68px);
-            line-height: 1;
-            letter-spacing: -3px;
-            margin-bottom: 18px;
-        }
-        .hero h1 span {
-            color: var(--green);
-            text-shadow: 0 0 30px rgba(92, 255, 158, 0.25);
-        }
-        .hero p {
-            max-width: 560px;
-            margin: auto;
-            color: var(--muted);
-            font-size: 16px;
-            line-height: 1.6;
-        }
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            letter-spacing: -2px;
         }
         .converter {
-            background: var(--card);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 28px;
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            box-shadow:
-                0 25px 80px rgba(0, 0, 0, 0.35),
-                inset 0 1px 0 rgba(255, 255, 255, 0.025);
-            animation: fadeUp 0.9s ease 0.1s both;
-        }
-        .mode-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .mode {
-            border: 1px solid rgba(255,255,255,0.06);
-            background: rgba(255,255,255,0.025);
-            color: var(--muted);
-            padding: 14px;
-            border-radius: 13px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.25s ease;
-        }
-        .mode:hover {
-            border-color: rgba(92,255,158,0.25);
-            transform: translateY(-1px);
-        }
-        .mode.active {
-            background: rgba(92,255,158,0.09);
-            border-color: rgba(92,255,158,0.35);
-            color: var(--green);
+            padding: 18px;
+            border-radius: 19px;
         }
         .coordinates {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: 1fr;
         }
-        label {
-            display: block;
-            color: var(--muted);
-            font-size: 13px;
-            margin-bottom: 8px;
+        .mode-buttons {
+            grid-template-columns: 1fr;
         }
-        input {
-            width: 100%;
-            padding: 16px;
-            border-radius: 13px;
-            border: 1px solid rgba(255,255,255,0.07);
-            background: var(--input);
-            color: var(--text);
-            outline: none;
-            font-size: 16px;
-            transition: 0.25s ease;
-        }
-        input:focus {
-            border-color: rgba(92,255,158,0.55);
-            box-shadow: 0 0 0 4px rgba(92,255,158,0.06);
-        }
-        input::placeholder {
-            color: #53635a;
-        }
-        .advanced-settings {
-            margin-top: 20px;
-            padding: 18px;
-            border-radius: 15px;
-            background: rgba(255,255,255,0.025);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .advanced-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 14px;
-            margin: 0;
-        }
-        .advanced-toggle input {
-            width: auto;
-            accent-color: var(--green);
-            cursor: pointer;
-        }
-        .advanced-options {
-            display: none;
-            margin-top: 18px;
-        }
-        .advanced-options.show {
-            display: block;
-        }
-        .setting {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            margin-top: 12px;
-            color: var(--muted);
-            font-size: 13px;
-        }
-        .setting:first-child {
-            margin-top: 0;
-        }
-        .setting input {
-            width: auto;
-            accent-color: var(--green);
-            cursor: pointer;
-        }
-        .y-input {
-            display: none;
-            margin-top: 15px;
-        }
-        .y-input.show {
-            display: block;
-        }
-        .setting-note {
-            margin-top: 12px;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.5;
-        }
-        .result {
-            margin-top: 22px;
-            padding: 22px;
-            border-radius: 16px;
-            background: rgba(92,255,158,0.045);
-            border: 1px solid rgba(92,255,158,0.12);
-            display: none;
-            animation: resultIn 0.4s ease forwards;
-        }
-        .result.show {
-            display: block;
-        }
-        @keyframes resultIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98) translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        .result-title {
-            color: var(--muted);
-            font-size: 13px;
-            margin-bottom: 8px;
+        .advanced-header {
+            align-items: flex-start;
         }
         .result-coordinates {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--green);
-            letter-spacing: -1px;
-            word-break: break-word;
+            font-size: 23px;
         }
-        .note {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.5;
-        }
-        .note strong {
-            color: var(--text);
-        }
-        .copy-button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 13px;
-            border: 1px solid rgba(92,255,158,0.2);
-            border-radius: 11px;
-            background: rgba(92,255,158,0.07);
-            color: var(--green);
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.25s ease;
-        }
-        .copy-button:hover {
-            background: rgba(92,255,158,0.12);
-            transform: translateY(-1px);
-        }
-        .copy-button.copied {
-            background: rgba(92,255,158,0.18);
-        }
-        footer {
-            text-align: center;
-            color: #526158;
-            font-size: 12px;
-            padding: 0 20px 35px;
-        }
-        @media (max-width: 600px) {
-            nav {
-                padding: 18px 5%;
-            }
-            main {
-                margin-top: 45px;
-            }
-            .hero h1 {
-                letter-spacing: -2px;
-            }
-            .converter {
-                padding: 18px;
-                border-radius: 19px;
-            }
-            .coordinates {
-                grid-template-columns: 1fr;
-            }
-            .mode-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
-    <nav>
-        <div class="logo">
-            Virtua<span>Utils</span>
+<nav>
+    <div class="logo">
+        Virtua<span>Utils</span>
+    </div>
+    <div class="status">
+        <div class="status-dot"></div>
+        Online
+    </div>
+</nav>
+<main>
+    <section class="hero">
+        <h1>
+            Minecraft <span>Coordinates</span>
+        </h1>
+        <p>
+            Convert coordinates between the Overworld and Nether instantly.
+            Fast, simple, and completely free.
+        </p>
+    </section>
+    <section class="converter">
+        <div class="mode-buttons">
+            <button class="mode active" id="overworldMode">
+                Overworld → Nether
+            </button>
+            <button class="mode" id="netherMode">
+                Nether → Overworld
+            </button>
         </div>
-        <div class="status">
-            <div class="status-dot"></div>
-            Online
-        </div>
-    </nav>
-    <main>
-        <section class="hero">
-            <h1>
-                Minecraft <span>Coordinates</span>
-            </h1>
-            <p>
-                Convert coordinates between the Overworld and Nether instantly.
-                Fast, simple, and completely free.
-            </p>
-        </section>
-        <section class="converter">
-            <div class="mode-buttons">
-                <button class="mode active" id="overworldMode">
-                    Overworld → Nether
-                </button>
-                <button class="mode" id="netherMode">
-                    Nether → Overworld
-                </button>
-            </div>
-            <div class="coordinates">
-                <div>
-                    <label for="x">X Coordinate</label>
-                    <input
-                        id="x"
-                        type="number"
-                        inputmode="decimal"
-                        placeholder="e.g. 1200"
-                    >
-                </div>
-                <div>
-                    <label for="z">Z Coordinate</label>
-                    <input
-                        id="z"
-                        type="number"
-                        inputmode="decimal"
-                        placeholder="e.g. -800"
-                    >
-                </div>
-            </div>
-            <div class="advanced-settings">
-                <label class="advanced-toggle">
-                    <input type="checkbox" id="advancedToggle">
-                    Enable advanced features
-                </label>
-                <div class="advanced-options" id="advancedOptions">
-                    <label class="setting">
-                        <input type="checkbox" id="decimalsToggle">
-                        Allow decimals
-                    </label>
-                    <label class="setting">
-                        <input type="checkbox" id="lettersToggle">
-                        Include coordinate letters
-                    </label>
-                    <label class="setting">
-                        <input type="checkbox" id="yToggle">
-                        Include Y coordinate
-                    </label>
-                    <div class="setting-note">
-                        Y is hidden by default because it stays the same between the Overworld and Nether.
-                        Enable it only when you need it included as an extra input and result.
-                    </div>
-                </div>
-            </div>
-            <div class="y-input" id="yInputContainer">
-                <label for="y">
-                    Y Coordinate
-                    <span style="opacity: 0.6;">(optional)</span>
-                </label>
+        <div class="coordinates">
+            <div>
+                <label for="x">X Coordinate</label>
                 <input
-                    id="y"
+                    id="x"
                     type="number"
                     inputmode="decimal"
-                    placeholder="e.g. 64"
+                    placeholder="e.g. 1200"
                 >
             </div>
-            <div class="result" id="result">
-                <div class="result-title">
-                    Converted coordinates
+            <div>
+                <label for="z">Z Coordinate</label>
+                <input
+                    id="z"
+                    type="number"
+                    inputmode="decimal"
+                    placeholder="e.g. -800"
+                >
+            </div>
+        </div>
+        <div class="advanced-settings">
+            <div class="advanced-header">
+                <div class="advanced-copy">
+                    <div class="advanced-title">Advanced options</div>
+                    <div class="advanced-description">
+                        Enable decimal values, coordinate labels, and Y coordinates.
+                    </div>
                 </div>
-                <div class="result-coordinates" id="resultCoordinates">
-                    X: 0, Z: 0
-                </div>
-                <button class="copy-button" id="copyButton">
-                    Copy Coordinates
-                </button>
-                <div class="note">
-                    <strong>Y coordinates stay the same</strong>
-                    when traveling between the Overworld and Nether.
-                    Y is hidden by default to keep the converter simple.
+                <label class="switch" aria-label="Enable advanced options">
+                    <input type="checkbox" id="advancedToggle">
+                    <span class="switch-track"></span>
+                </label>
+            </div>
+            <div class="advanced-options" id="advancedOptions">
+                <label class="setting">
+                    <input type="checkbox" id="decimalsToggle">
+                    Allow decimals
+                </label>
+                <label class="setting">
+                    <input type="checkbox" id="lettersToggle">
+                    Include coordinate letters
+                </label>
+                <label class="setting">
+                    <input type="checkbox" id="yToggle">
+                    Include Y coordinate
+                </label>
+                <div class="setting-note">
+                    Y stays the same between the Overworld and Nether.
+                    If you want to enter or display Y, enable advanced options and turn on
+                    <strong>Include Y coordinate</strong>.
                 </div>
             </div>
-        </section>
-    </main>
-    <footer>
-        VirtuaUtils · Minecraft utilities made simple
-    </footer>
-    <script>
-        const overworldMode = document.getElementById("overworldMode");
-        const netherMode = document.getElementById("netherMode");
-        const xInput = document.getElementById("x");
-        const yInput = document.getElementById("y");
-        const zInput = document.getElementById("z");
-        const yInputContainer = document.getElementById("yInputContainer");
-        const advancedToggle = document.getElementById("advancedToggle");
-        const advancedOptions = document.getElementById("advancedOptions");
-        const decimalsToggle = document.getElementById("decimalsToggle");
-        const lettersToggle = document.getElementById("lettersToggle");
-        const yToggle = document.getElementById("yToggle");
-        const result = document.getElementById("result");
-        const resultCoordinates = document.getElementById("resultCoordinates");
-        const copyButton = document.getElementById("copyButton");
-        let mode = "overworld";
-        function formatNumber(number) {
-            if (!Number.isFinite(number)) {
-                return "";
-            }
-            if (!decimalsToggle.checked) {
-                return Math.round(number).toString();
-            }
-            return number
-                .toFixed(2)
-                .replace(/\.?0+$/, "");
+        </div>
+        <div class="y-input" id="yInputContainer">
+            <label for="y">
+                Y Coordinate
+                <span style="opacity: 0.6;">(optional)</span>
+            </label>
+            <input
+                id="y"
+                type="number"
+                inputmode="decimal"
+                placeholder="e.g. 64"
+            >
+        </div>
+        <div class="result" id="result">
+            <div class="result-title">
+                Converted coordinates
+            </div>
+            <div class="result-coordinates" id="resultCoordinates">
+                X: 0, Z: 0
+            </div>
+            <button class="copy-button" id="copyButton">
+                Copy Coordinates
+            </button>
+            <div class="note">
+                <strong>Y coordinates stay the same</strong>
+                when traveling between the Overworld and Nether.
+                If you want Y included, enable advanced options and turn on
+                <strong>Include Y coordinate</strong>.
+            </div>
+        </div>
+    </section>
+</main>
+<footer>
+    VirtuaUtils · Minecraft utilities made simple
+</footer>
+<script>
+    const overworldMode = document.getElementById("overworldMode");
+    const netherMode = document.getElementById("netherMode");
+    const xInput = document.getElementById("x");
+    const yInput = document.getElementById("y");
+    const zInput = document.getElementById("z");
+    const yInputContainer = document.getElementById("yInputContainer");
+    const advancedToggle = document.getElementById("advancedToggle");
+    const advancedOptions = document.getElementById("advancedOptions");
+    const decimalsToggle = document.getElementById("decimalsToggle");
+    const lettersToggle = document.getElementById("lettersToggle");
+    const yToggle = document.getElementById("yToggle");
+    const result = document.getElementById("result");
+    const resultCoordinates = document.getElementById("resultCoordinates");
+    const copyButton = document.getElementById("copyButton");
+    let mode = "overworld";
+    function formatNumber(number) {
+        if (!Number.isFinite(number)) {
+            return "";
         }
-        function getConvertedCoordinates() {
-            const xValue = xInput.value.trim();
-            const zValue = zInput.value.trim();
-            if (xValue === "" || zValue === "") {
-                return null;
-            }
-            const x = Number(xValue);
-            const z = Number(zValue);
-            if (!Number.isFinite(x) || !Number.isFinite(z)) {
-                return null;
-            }
-            const convertedX = mode === "overworld" ? x / 8 : x * 8;
-            const convertedZ = mode === "overworld" ? z / 8 : z * 8;
-            let y = null;
-            if (yToggle.checked && yInput.value.trim() !== "") {
-                const parsedY = Number(yInput.value);
-                if (Number.isFinite(parsedY)) {
-                    y = parsedY;
-                }
-            }
-            return {
-                x: convertedX,
-                y,
-                z: convertedZ
-            };
+        if (!decimalsToggle.checked) {
+            return Math.round(number).toString();
         }
-        function buildCoordinateText(coordinates) {
-            const x = formatNumber(coordinates.x);
-            const z = formatNumber(coordinates.z);
-            const y = coordinates.y === null ? null : formatNumber(coordinates.y);
-            const values = y === null ? [x, z] : [x, y, z];
-            if (!lettersToggle.checked) {
-                return values.join(", ");
-            }
-            if (y === null) {
-                return `X: ${x}, Z: ${z}`;
-            }
-            return `X: ${x}, Y: ${y}, Z: ${z}`;
+        return number
+            .toFixed(2)
+            .replace(/\.?0+$/, "");
+    }
+    function getConvertedCoordinates() {
+        const xValue = xInput.value.trim();
+        const zValue = zInput.value.trim();
+        if (xValue === "" || zValue === "") {
+            return null;
         }
-        function convertCoordinates() {
-            const coordinates = getConvertedCoordinates();
-            if (!coordinates) {
-                result.classList.remove("show");
-                return;
-            }
-            resultCoordinates.textContent = buildCoordinateText(coordinates);
-            result.classList.add("show");
+        const x = Number(xValue);
+        const z = Number(zValue);
+        if (!Number.isFinite(x) || !Number.isFinite(z)) {
+            return null;
         }
-        function updateAdvancedSettings() {
-            const advancedEnabled = advancedToggle.checked;
-            advancedOptions.classList.toggle("show", advancedEnabled);
-            yInputContainer.classList.toggle("show", advancedEnabled && yToggle.checked);
-            if (!advancedEnabled) {
-                yInput.value = "";
+        const convertedX = mode === "overworld" ? x / 8 : x * 8;
+        const convertedZ = mode === "overworld" ? z / 8 : z * 8;
+        let y = null;
+        if (advancedToggle.checked && yToggle.checked && yInput.value.trim() !== "") {
+            const parsedY = Number(yInput.value);
+            if (Number.isFinite(parsedY)) {
+                y = parsedY;
             }
-            convertCoordinates();
         }
-        function updateInputModes() {
-            const allowDecimals = advancedToggle.checked && decimalsToggle.checked;
-            xInput.step = allowDecimals ? "any" : "1";
-            zInput.step = allowDecimals ? "any" : "1";
-            yInput.step = allowDecimals ? "any" : "1";
-            convertCoordinates();
+        return {
+            x: convertedX,
+            y,
+            z: convertedZ
+        };
+    }
+    function buildCoordinateText(coordinates, forCopy = false) {
+        const x = formatNumber(coordinates.x);
+        const z = formatNumber(coordinates.z);
+        const y = coordinates.y === null ? null : formatNumber(coordinates.y);
+        const values = y === null ? [x, z] : [x, y, z];
+        if (!lettersToggle.checked) {
+            return values.join(", ");
         }
-        overworldMode.addEventListener("click", () => {
-            mode = "overworld";
-            overworldMode.classList.add("active");
-            netherMode.classList.remove("active");
-            convertCoordinates();
-        });
-        netherMode.addEventListener("click", () => {
-            mode = "nether";
-            netherMode.classList.add("active");
-            overworldMode.classList.remove("active");
-            convertCoordinates();
-        });
-        advancedToggle.addEventListener("change", () => {
-            updateAdvancedSettings();
-            updateInputModes();
-        });
-        decimalsToggle.addEventListener("change", updateInputModes);
-        lettersToggle.addEventListener("change", convertCoordinates);
-        yToggle.addEventListener("change", () => {
-            yInputContainer.classList.toggle("show", advancedToggle.checked && yToggle.checked);
-            if (!yToggle.checked) {
-                yInput.value = "";
-            }
-            convertCoordinates();
-        });
-        xInput.addEventListener("input", convertCoordinates);
-        yInput.addEventListener("input", convertCoordinates);
-        zInput.addEventListener("input", convertCoordinates);
-        copyButton.addEventListener("click", async () => {
-            const coordinates = getConvertedCoordinates();
-            if (!coordinates) {
-                return;
-            }
-            const copiedText = buildCoordinateText(coordinates);
-            try {
-                await navigator.clipboard.writeText(copiedText);
-                copyButton.textContent = "✓ Copied!";
-                copyButton.classList.add("copied");
-                setTimeout(() => {
-                    copyButton.textContent = "Copy Coordinates";
-                    copyButton.classList.remove("copied");
-                }, 1500);
-            } catch (error) {
-                copyButton.textContent = "Copy failed";
-                setTimeout(() => {
-                    copyButton.textContent = "Copy Coordinates";
-                }, 1500);
-            }
-        });
+        if (y === null) {
+            return forCopy
+                ? `X: ${x}, Z: ${z}`
+                : `X: ${x}  Z: ${z}`;
+        }
+        return forCopy
+            ? `X: ${x}, Y: ${y}, Z: ${z}`
+            : `X: ${x}  Y: ${y}  Z: ${z}`;
+    }
+    function convertCoordinates() {
+        const coordinates = getConvertedCoordinates();
+        if (!coordinates) {
+            result.classList.remove("show");
+            return;
+        }
+        resultCoordinates.textContent = buildCoordinateText(coordinates);
+        result.classList.add("show");
+    }
+    function updateAdvancedSettings() {
+        const advancedEnabled = advancedToggle.checked;
+        advancedOptions.classList.toggle("show", advancedEnabled);
+        yInputContainer.classList.toggle("show", advancedEnabled && yToggle.checked);
+        if (!advancedEnabled) {
+            yInput.value = "";
+        }
+        convertCoordinates();
+    }
+    function updateInputModes() {
+        const allowDecimals = advancedToggle.checked && decimalsToggle.checked;
+        xInput.step = allowDecimals ? "any" : "1";
+        zInput.step = allowDecimals ? "any" : "1";
+        yInput.step = allowDecimals ? "any" : "1";
+        convertCoordinates();
+    }
+    overworldMode.addEventListener("click", () => {
+        mode = "overworld";
+        overworldMode.classList.add("active");
+        netherMode.classList.remove("active");
+        convertCoordinates();
+    });
+    netherMode.addEventListener("click", () => {
+        mode = "nether";
+        netherMode.classList.add("active");
+        overworldMode.classList.remove("active");
+        convertCoordinates();
+    });
+    advancedToggle.addEventListener("change", () => {
         updateAdvancedSettings();
         updateInputModes();
-    </script>
+    });
+    decimalsToggle.addEventListener("change", updateInputModes);
+    lettersToggle.addEventListener("change", convertCoordinates);
+    yToggle.addEventListener("change", () => {
+        yInputContainer.classList.toggle("show", advancedToggle.checked && yToggle.checked);
+        if (!yToggle.checked) {
+            yInput.value = "";
+        }
+        convertCoordinates();
+    });
+    xInput.addEventListener("input", convertCoordinates);
+    yInput.addEventListener("input", convertCoordinates);
+    zInput.addEventListener("input", convertCoordinates);
+    copyButton.addEventListener("click", async () => {
+        const coordinates = getConvertedCoordinates();
+        if (!coordinates) {
+            return;
+        }
+        const copiedText = buildCoordinateText(coordinates, true);
+        try {
+            await navigator.clipboard.writeText(copiedText);
+            copyButton.textContent = "✓ Copied!";
+            copyButton.classList.add("copied");
+            setTimeout(() => {
+                copyButton.textContent = "Copy Coordinates";
+                copyButton.classList.remove("copied");
+            }, 1500);
+        } catch (error) {
+            copyButton.textContent = "Copy failed";
+            setTimeout(() => {
+                copyButton.textContent = "Copy Coordinates";
+            }, 1500);
+        }
+    });
+    updateAdvancedSettings();
+    updateInputModes();
+</script>
 </body>
 </html>
