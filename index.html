@@ -333,7 +333,7 @@
         font-size: 28px;
         font-weight: 800;
         color: var(--green);
-        letter-spacing: 0.08em;
+        letter-spacing: normal;
         word-break: break-word;
     }
     .copy-button {
@@ -547,45 +547,51 @@
     function getConvertedCoordinates() {
         const xValue = xInput.value.trim();
         const zValue = zInput.value.trim();
-        if (xValue === "" || zValue === "") {
+        const yValue = yInput.value.trim();
+        const hasX = xValue !== "";
+        const hasZ = zValue !== "";
+        const hasY = advancedToggle.checked && yToggle.checked && yValue !== "";
+        if (!hasX && !hasZ && !hasY) {
             return null;
         }
-        const x = Number(xValue);
-        const z = Number(zValue);
-        if (!Number.isFinite(x) || !Number.isFinite(z)) {
+        const x = hasX ? Number(xValue) : null;
+        const z = hasZ ? Number(zValue) : null;
+        const y = hasY ? Number(yValue) : null;
+        if (
+            (hasX && !Number.isFinite(x)) ||
+            (hasZ && !Number.isFinite(z)) ||
+            (hasY && !Number.isFinite(y))
+        ) {
             return null;
-        }
-        const convertedX = mode === "overworld" ? x / 8 : x * 8;
-        const convertedZ = mode === "overworld" ? z / 8 : z * 8;
-        let y = null;
-        if (advancedToggle.checked && yToggle.checked && yInput.value.trim() !== "") {
-            const parsedY = Number(yInput.value);
-            if (Number.isFinite(parsedY)) {
-                y = parsedY;
-            }
         }
         return {
-            x: convertedX,
+            x: x === null ? null : mode === "overworld" ? x / 8 : x * 8,
             y,
-            z: convertedZ
+            z: z === null ? null : mode === "overworld" ? z / 8 : z * 8
         };
     }
     function buildCoordinateText(coordinates, forCopy = false) {
-        const x = formatNumber(coordinates.x);
-        const z = formatNumber(coordinates.z);
-        const y = coordinates.y === null ? null : formatNumber(coordinates.y);
-        const values = y === null ? [x, z] : [x, y, z];
+        const values = [];
+        const labeledValues = [];
+        if (coordinates.x !== null) {
+            const x = formatNumber(coordinates.x);
+            values.push(x);
+            labeledValues.push(`X: ${x}`);
+        }
+        if (coordinates.y !== null) {
+            const y = formatNumber(coordinates.y);
+            values.push(y);
+            labeledValues.push(`Y: ${y}`);
+        }
+        if (coordinates.z !== null) {
+            const z = formatNumber(coordinates.z);
+            values.push(z);
+            labeledValues.push(`Z: ${z}`);
+        }
         if (!lettersToggle.checked) {
             return values.join(", ");
         }
-        if (y === null) {
-            return forCopy
-                ? `X: ${x}, Z: ${z}`
-                : `X: ${x}  Z: ${z}`;
-        }
-        return forCopy
-            ? `X: ${x}, Y: ${y}, Z: ${z}`
-            : `X: ${x}  Y: ${y}  Z: ${z}`;
+        return labeledValues.join(forCopy ? ", " : "  ");
     }
     function convertCoordinates() {
         const coordinates = getConvertedCoordinates();
