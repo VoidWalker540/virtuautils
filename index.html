@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0b100d">
+    <meta name="theme-color" content="#eef8f1">
     <meta name="description" content="Convert Minecraft Overworld coordinates to Nether coordinates and back instantly.">
     <title>Minecraft Coordinate Converter | VirtuaUtils</title>
 <style>
@@ -13,23 +13,6 @@
         padding: 0;
     }
     :root {
-        color-scheme: dark;
-        --bg: #0b100d;
-        --bg-deep: #070b09;
-        --card: rgba(18, 28, 23, 0.86);
-        --card-border: rgba(92, 255, 158, 0.16);
-        --text: #f1fff6;
-        --muted: #9aafa1;
-        --green: #5cff9e;
-        --green-bright: #a4ffc5;
-        --input: #101a14;
-        --danger: #ff8f8f;
-        --shadow: rgba(0, 0, 0, 0.32);
-        --surface: rgba(255, 255, 255, 0.035);
-        --surface-strong: rgba(255, 255, 255, 0.07);
-        --line: rgba(255, 255, 255, 0.08);
-    }
-    html[data-theme="light"] {
         color-scheme: light;
         --bg: #eef8f1;
         --bg-deep: #e4f1e8;
@@ -46,6 +29,23 @@
         --surface-strong: rgba(16, 80, 42, 0.08);
         --line: rgba(16, 80, 42, 0.12);
     }
+    html[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #121a15;
+        --bg-deep: #0d130f;
+        --card: rgba(27, 40, 33, 0.9);
+        --card-border: rgba(92, 255, 158, 0.22);
+        --text: #f4fff7;
+        --muted: #b0c4b6;
+        --green: #6dffa8;
+        --green-bright: #b8ffd0;
+        --input: #18251d;
+        --danger: #ff9d9d;
+        --shadow: rgba(0, 0, 0, 0.4);
+        --surface: rgba(255, 255, 255, 0.055);
+        --surface-strong: rgba(255, 255, 255, 0.095);
+        --line: rgba(255, 255, 255, 0.13);
+    }
     html {
         scroll-behavior: smooth;
     }
@@ -59,6 +59,12 @@
             radial-gradient(circle at 85% 75%, rgba(0, 255, 140, 0.09), transparent 30%),
             linear-gradient(135deg, var(--bg), var(--bg-deep) 48%, var(--bg));
         transition: background 0.3s ease, color 0.3s ease;
+    }
+    html[data-theme="dark"] body {
+        background:
+            radial-gradient(circle at 15% 15%, rgba(44, 255, 135, 0.18), transparent 28%),
+            radial-gradient(circle at 85% 75%, rgba(0, 255, 140, 0.12), transparent 30%),
+            linear-gradient(135deg, var(--bg), var(--bg-deep) 48%, #111a14);
     }
     html[data-theme="light"] body {
         background:
@@ -259,7 +265,7 @@
         -webkit-backdrop-filter: blur(18px);
         box-shadow:
             0 25px 80px var(--shadow),
-            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
         animation: fadeUp 0.7s ease 0.12s both;
         transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
@@ -619,20 +625,20 @@
         <div class="logo">
             Virtua<span>Utils</span>
         </div>
-    <div class="nav-actions">
-        <div class="theme-control">
-            <label for="themeSelect">Theme</label>
-            <select class="theme-select" id="themeSelect" aria-label="Choose color theme">
-                <option value="system">System</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-            </select>
-        </div>
-        <div class="status">
-            <div class="status-dot"></div>
-            Online
-        </div>
+<div class="nav-actions">
+    <div class="theme-control">
+        <label for="themeSelect">Theme</label>
+        <select class="theme-select" id="themeSelect" aria-label="Choose color theme">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select>
     </div>
+    <div class="status">
+        <div class="status-dot"></div>
+        Online
+    </div>
+</div>
 </nav>
 <main>
     <section class="hero">
@@ -642,85 +648,85 @@
             Fast, simple, and completely free.
         </p>
     </section>
-    <section class="converter">
-        <div class="mode-buttons">
-            <button class="mode active" id="overworldMode" type="button">
-                Overworld → Nether
-            </button>
-            <button class="mode" id="netherMode" type="button">
-                Nether → Overworld
-            </button>
+<section class="converter">
+    <div class="mode-buttons">
+        <button class="mode active" id="overworldMode" type="button">
+            Overworld → Nether
+        </button>
+        <button class="mode" id="netherMode" type="button">
+            Nether → Overworld
+        </button>
+    </div>
+    <div class="coordinates">
+        <div>
+            <label for="x">X Coordinate</label>
+            <input id="x" type="number" inputmode="decimal" placeholder="e.g. 1200">
         </div>
-        <div class="coordinates">
-            <div>
-                <label for="x">X Coordinate</label>
-                <input id="x" type="number" inputmode="decimal" placeholder="e.g. 1200">
-            </div>
-            <div>
-                <label for="z">Z Coordinate</label>
-                <input id="z" type="number" inputmode="decimal" placeholder="e.g. -800">
-            </div>
+        <div>
+            <label for="z">Z Coordinate</label>
+            <input id="z" type="number" inputmode="decimal" placeholder="e.g. -800">
         </div>
-        <div class="advanced-settings">
-            <div class="advanced-header">
-                <div class="advanced-copy">
-                    <div class="advanced-title">Advanced options</div>
-                    <div class="advanced-description">
-                        Enable decimal values, coordinate labels, and Y coordinates.
-                    </div>
-                </div>
-                <label class="switch" aria-label="Enable advanced options">
-                    <input type="checkbox" id="advancedToggle">
-                    <span class="switch-track"></span>
-                </label>
-            </div>
-            <div class="advanced-options" id="advancedOptions">
-                <div class="advanced-options-inner">
-                    <label class="setting">
-                        <input type="checkbox" id="decimalsToggle">
-                        Allow decimals
-                    </label>
-                    <label class="setting">
-                        <input type="checkbox" id="lettersToggle">
-                        Include coordinate letters
-                    </label>
-                    <label class="setting">
-                        <input type="checkbox" id="yToggle">
-                        Include Y coordinate
-                    </label>
-                    <div class="setting-note">
-                        Y stays the same between the Overworld and Nether.
-                        If you want to enter or display Y, enable advanced options and turn on
-                        <strong>Include Y coordinate</strong>.
-                    </div>
+    </div>
+    <div class="advanced-settings">
+        <div class="advanced-header">
+            <div class="advanced-copy">
+                <div class="advanced-title">Advanced options</div>
+                <div class="advanced-description">
+                    Enable decimal values, coordinate labels, and Y coordinates.
                 </div>
             </div>
+            <label class="switch" aria-label="Enable advanced options">
+                <input type="checkbox" id="advancedToggle">
+                <span class="switch-track"></span>
+            </label>
         </div>
-        <div class="y-input" id="yInputContainer">
-            <div>
-                <label for="y">
-                    Y Coordinate
-                    <span style="opacity: 0.6;">(optional)</span>
+        <div class="advanced-options" id="advancedOptions">
+            <div class="advanced-options-inner">
+                <label class="setting">
+                    <input type="checkbox" id="decimalsToggle">
+                    Allow decimals
                 </label>
-                <input id="y" type="number" inputmode="decimal" placeholder="e.g. 64">
+                <label class="setting">
+                    <input type="checkbox" id="lettersToggle">
+                    Include coordinate letters
+                </label>
+                <label class="setting">
+                    <input type="checkbox" id="yToggle">
+                    Include Y coordinate
+                </label>
+                <div class="setting-note">
+                    Y stays the same between the Overworld and Nether.
+                    If you want to enter or display Y, enable advanced options and turn on
+                    <strong>Include Y coordinate</strong>.
+                </div>
             </div>
         </div>
-        <div class="result" id="result" aria-live="polite">
-            <div class="result-title">Converted coordinates</div>
-            <div class="result-coordinates" id="resultCoordinates">
-                X: 0, Z: 0
-            </div>
-            <button class="copy-button" id="copyButton" type="button">
-                Copy Coordinates
-            </button>
-            <div class="note">
-                <strong>Y coordinates stay the same</strong>
-                when traveling between the Overworld and Nether.
-                If you want Y included, enable advanced options and turn on
-                <strong>Include Y coordinate</strong>.
-            </div>
+    </div>
+    <div class="y-input" id="yInputContainer">
+        <div>
+            <label for="y">
+                Y Coordinate
+                <span style="opacity: 0.6;">(optional)</span>
+            </label>
+            <input id="y" type="number" inputmode="decimal" placeholder="e.g. 64">
         </div>
-    </section>
+    </div>
+    <div class="result" id="result" aria-live="polite">
+        <div class="result-title">Converted coordinates</div>
+        <div class="result-coordinates" id="resultCoordinates">
+            X: 0, Z: 0
+        </div>
+        <button class="copy-button" id="copyButton" type="button">
+            Copy Coordinates
+        </button>
+        <div class="note">
+            <strong>Y coordinates stay the same</strong>
+            when traveling between the Overworld and Nether.
+            If you want Y included, enable advanced options and turn on
+            <strong>Include Y coordinate</strong>.
+        </div>
+    </div>
+</section>
 </main>
 <footer>
     VirtuaUtils · Minecraft utilities made simple
@@ -754,8 +760,8 @@
         localStorage.setItem("virtuaUtilsTheme", theme);
     }
     function loadTheme() {
-        const savedTheme = localStorage.getItem("virtuaUtilsTheme") || "system";
-        applyTheme(["system", "light", "dark"].includes(savedTheme) ? savedTheme : "system");
+        const savedTheme = localStorage.getItem("virtuaUtilsTheme") || "light";
+        applyTheme(["system", "light", "dark"].includes(savedTheme) ? savedTheme : "light");
     }
     function formatNumber(number) {
         if (!Number.isFinite(number)) {
@@ -875,7 +881,7 @@
         applyTheme(themeSelect.value);
     });
     window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
-        if ((localStorage.getItem("virtuaUtilsTheme") || "system") === "system") {
+        if ((localStorage.getItem("virtuaUtilsTheme") || "light") === "system") {
             applyTheme("system");
         }
     });
