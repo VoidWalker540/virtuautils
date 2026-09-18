@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#070b0a">
+    <meta name="theme-color" content="#0b100d">
     <meta name="description" content="Convert Minecraft Overworld coordinates to Nether coordinates and back instantly.">
     <title>Minecraft Coordinate Converter | VirtuaUtils</title>
 <style>
@@ -13,15 +13,38 @@
         padding: 0;
     }
     :root {
-        --bg: #070b0a;
-        --card: rgba(15, 23, 20, 0.82);
-        --card-border: rgba(92, 255, 158, 0.14);
+        color-scheme: dark;
+        --bg: #0b100d;
+        --bg-deep: #070b09;
+        --card: rgba(18, 28, 23, 0.86);
+        --card-border: rgba(92, 255, 158, 0.16);
         --text: #f1fff6;
-        --muted: #91a69a;
+        --muted: #9aafa1;
         --green: #5cff9e;
-        --green-bright: #9affc0;
-        --input: #0c1410;
+        --green-bright: #a4ffc5;
+        --input: #101a14;
         --danger: #ff8f8f;
+        --shadow: rgba(0, 0, 0, 0.32);
+        --surface: rgba(255, 255, 255, 0.035);
+        --surface-strong: rgba(255, 255, 255, 0.07);
+        --line: rgba(255, 255, 255, 0.08);
+    }
+    html[data-theme="light"] {
+        color-scheme: light;
+        --bg: #eef8f1;
+        --bg-deep: #e4f1e8;
+        --card: rgba(255, 255, 255, 0.82);
+        --card-border: rgba(24, 137, 72, 0.2);
+        --text: #102018;
+        --muted: #5d7164;
+        --green: #168b4b;
+        --green-bright: #08783d;
+        --input: #f7fcf8;
+        --danger: #c43d3d;
+        --shadow: rgba(31, 75, 48, 0.14);
+        --surface: rgba(16, 80, 42, 0.045);
+        --surface-strong: rgba(16, 80, 42, 0.08);
+        --line: rgba(16, 80, 42, 0.12);
     }
     html {
         scroll-behavior: smooth;
@@ -32,9 +55,16 @@
         color: var(--text);
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         background:
-            radial-gradient(circle at 15% 15%, rgba(44, 255, 135, 0.12), transparent 28%),
-            radial-gradient(circle at 85% 75%, rgba(0, 255, 140, 0.08), transparent 30%),
-            linear-gradient(135deg, #070b0a, #09110d 48%, #050807);
+            radial-gradient(circle at 15% 15%, rgba(44, 255, 135, 0.14), transparent 28%),
+            radial-gradient(circle at 85% 75%, rgba(0, 255, 140, 0.09), transparent 30%),
+            linear-gradient(135deg, var(--bg), var(--bg-deep) 48%, var(--bg));
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    html[data-theme="light"] body {
+        background:
+            radial-gradient(circle at 15% 15%, rgba(44, 255, 135, 0.16), transparent 28%),
+            radial-gradient(circle at 85% 75%, rgba(0, 180, 90, 0.1), transparent 30%),
+            linear-gradient(135deg, var(--bg), var(--bg-deep) 48%, #f5fbf6);
     }
     body::before,
     body::after {
@@ -44,6 +74,7 @@
         pointer-events: none;
         border-radius: 50%;
         filter: blur(2px);
+        opacity: 0.8;
     }
     body::before {
         width: 420px;
@@ -51,7 +82,7 @@
         top: 12%;
         left: -180px;
         background: rgba(92, 255, 158, 0.06);
-        animation: floatOrb 12s ease-in-out infinite;
+        animation: floatOrb 18s ease-in-out infinite;
     }
     body::after {
         width: 360px;
@@ -59,7 +90,7 @@
         right: -150px;
         bottom: 8%;
         background: rgba(92, 255, 158, 0.045);
-        animation: floatOrb 15s ease-in-out infinite reverse;
+        animation: floatOrb 22s ease-in-out infinite reverse;
     }
     body::selection {
         color: var(--bg);
@@ -71,7 +102,8 @@
     }
     button:focus-visible,
     input:focus-visible,
-    .switch input:focus-visible + .switch-track {
+    .switch input:focus-visible + .switch-track,
+    .theme-select:focus-visible {
         outline: 2px solid var(--green);
         outline-offset: 3px;
     }
@@ -80,25 +112,25 @@
             transform: translate3d(0, 0, 0) scale(1);
         }
         50% {
-            transform: translate3d(35px, -25px, 0) scale(1.08);
+            transform: translate3d(24px, -18px, 0) scale(1.04);
         }
     }
     @keyframes pulse {
         0%, 100% {
             opacity: 1;
             transform: scale(1);
-            box-shadow: 0 0 12px var(--green);
+            box-shadow: 0 0 10px var(--green);
         }
         50% {
-            opacity: 0.45;
-            transform: scale(0.72);
+            opacity: 0.55;
+            transform: scale(0.82);
             box-shadow: 0 0 5px var(--green);
         }
     }
     @keyframes fadeUp {
         from {
             opacity: 0;
-            transform: translateY(24px);
+            transform: translateY(14px);
         }
         to {
             opacity: 1;
@@ -108,11 +140,11 @@
     @keyframes resultIn {
         from {
             opacity: 0;
-            transform: translateY(12px) scale(0.98);
+            transform: translateY(8px);
         }
         to {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0);
         }
     }
     @keyframes shimmer {
@@ -120,7 +152,7 @@
             transform: translateX(-120%);
         }
         to {
-            transform: translateX(120%);
+            transform: translateX(360%);
         }
     }
     nav {
@@ -129,7 +161,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        animation: fadeUp 0.7s ease both;
+        gap: 20px;
+        animation: fadeUp 0.55s ease both;
     }
     .logo {
         font-size: 21px;
@@ -139,6 +172,11 @@
     .logo span {
         color: var(--green);
         text-shadow: 0 0 18px rgba(92, 255, 158, 0.35);
+    }
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 18px;
     }
     .status {
         display: flex;
@@ -152,7 +190,23 @@
         height: 7px;
         border-radius: 50%;
         background: var(--green);
-        animation: pulse 2s infinite;
+        animation: pulse 2.8s ease-in-out infinite;
+    }
+    .theme-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+    }
+    .theme-select {
+        min-width: 92px;
+        padding: 7px 9px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: var(--surface);
+        color: var(--text);
+        cursor: pointer;
     }
     main {
         width: min(920px, 92%);
@@ -162,7 +216,7 @@
         position: relative;
         text-align: center;
         margin-bottom: 45px;
-        animation: fadeUp 0.8s ease 0.08s both;
+        animation: fadeUp 0.65s ease 0.06s both;
     }
     .hero::before {
         content: "";
@@ -204,9 +258,10 @@
         backdrop-filter: blur(18px);
         -webkit-backdrop-filter: blur(18px);
         box-shadow:
-            0 25px 80px rgba(0, 0, 0, 0.35),
-            inset 0 1px 0 rgba(255, 255, 255, 0.035);
-        animation: fadeUp 0.9s ease 0.16s both;
+            0 25px 80px var(--shadow),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        animation: fadeUp 0.7s ease 0.12s both;
+        transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
     .converter::before {
         content: "";
@@ -217,7 +272,7 @@
         height: 1px;
         background: linear-gradient(90deg, transparent, var(--green), transparent);
         opacity: 0.7;
-        animation: shimmer 7s ease-in-out infinite;
+        animation: shimmer 10s ease-in-out infinite;
     }
     .mode-buttons {
         display: grid;
@@ -231,14 +286,14 @@
         overflow: hidden;
     }
     .mode {
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--line);
+        background: var(--surface);
         color: var(--muted);
         padding: 14px;
         border-radius: 13px;
         cursor: pointer;
         font-size: 14px;
-        transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
     }
     .mode::after,
     .copy-button::after {
@@ -247,7 +302,8 @@
         inset: 0;
         background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.12), transparent 75%);
         transform: translateX(-120%);
-        transition: transform 0.6s ease;
+        transition: transform 0.55s ease;
+        pointer-events: none;
     }
     .mode:hover::after,
     .copy-button:hover::after {
@@ -277,13 +333,13 @@
     input {
         width: 100%;
         padding: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.07);
+        border: 1px solid var(--line);
         border-radius: 13px;
         outline: none;
         background: var(--input);
         color: var(--text);
         font-size: 16px;
-        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.3s ease;
     }
     input:hover {
         border-color: rgba(92, 255, 158, 0.2);
@@ -294,7 +350,8 @@
         transform: translateY(-1px);
     }
     input::placeholder {
-        color: #53635a;
+        color: var(--muted);
+        opacity: 0.65;
     }
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
@@ -307,9 +364,9 @@
     .advanced-settings {
         margin-top: 20px;
         padding: 18px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--line);
         border-radius: 15px;
-        background: rgba(255, 255, 255, 0.025);
+        background: var(--surface);
         transition: border-color 0.25s ease, background 0.25s ease;
     }
     .advanced-settings:has(.advanced-options.show) {
@@ -353,9 +410,9 @@
     .switch-track {
         position: absolute;
         inset: 0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--line);
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.12);
+        background: var(--surface-strong);
         cursor: pointer;
         transition: 0.25s ease;
     }
@@ -367,7 +424,7 @@
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        background: #b7c5bc;
+        background: var(--muted);
         transition: 0.25s ease;
     }
     .switch input:checked + .switch-track {
@@ -379,24 +436,28 @@
         background: var(--green);
         box-shadow: 0 0 12px rgba(92, 255, 158, 0.45);
     }
-    .advanced-options {
+    .advanced-options,
+    .y-input {
         display: grid;
         grid-template-rows: 0fr;
+        overflow: hidden;
+        opacity: 0;
+        transition: grid-template-rows 0.3s ease, margin-top 0.3s ease, padding-top 0.3s ease, opacity 0.2s ease, border-color 0.3s ease;
+    }
+    .advanced-options {
         margin-top: 0;
         padding-top: 0;
         border-top: 1px solid transparent;
-        opacity: 0;
-        overflow: hidden;
-        transition: grid-template-rows 0.35s ease, margin-top 0.35s ease, padding-top 0.35s ease, opacity 0.25s ease, border-color 0.35s ease;
     }
-    .advanced-options > * {
+    .advanced-options > *,
+    .y-input > div {
         min-height: 0;
     }
     .advanced-options.show {
         grid-template-rows: 1fr;
         margin-top: 18px;
         padding-top: 16px;
-        border-top-color: rgba(255, 255, 255, 0.06);
+        border-top-color: var(--line);
         opacity: 1;
     }
     .advanced-options-inner {
@@ -424,15 +485,7 @@
         cursor: pointer;
     }
     .y-input {
-        display: grid;
-        grid-template-rows: 0fr;
         margin-top: 0;
-        opacity: 0;
-        overflow: hidden;
-        transition: grid-template-rows 0.35s ease, margin-top 0.35s ease, opacity 0.25s ease;
-    }
-    .y-input > div {
-        min-height: 0;
     }
     .y-input.show {
         grid-template-rows: 1fr;
@@ -456,7 +509,7 @@
     }
     .result.show {
         display: block;
-        animation: resultIn 0.45s ease both;
+        animation: resultIn 0.3s ease both;
     }
     .result-title {
         color: var(--muted);
@@ -481,7 +534,7 @@
         color: var(--green);
         font-weight: 700;
         cursor: pointer;
-        transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+        transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
     }
     .copy-button:hover {
         border-color: rgba(92, 255, 158, 0.42);
@@ -499,7 +552,7 @@
     .note {
         margin-top: 16px;
         padding-top: 16px;
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        border-top: 1px solid var(--line);
         color: var(--muted);
         font-size: 12px;
         line-height: 1.5;
@@ -509,14 +562,24 @@
     }
     footer {
         padding: 0 20px 35px;
-        color: #526158;
+        color: var(--muted);
         font-size: 12px;
         text-align: center;
-        animation: fadeUp 1s ease 0.3s both;
+        opacity: 0.75;
+        animation: fadeUp 0.7s ease 0.2s both;
     }
     @media (max-width: 600px) {
         nav {
             padding: 18px 5%;
+            align-items: flex-start;
+        }
+        .nav-actions {
+            align-items: flex-end;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .theme-control {
+            font-size: 12px;
         }
         main {
             margin-top: 45px;
@@ -556,9 +619,19 @@
         <div class="logo">
             Virtua<span>Utils</span>
         </div>
-    <div class="status">
-        <div class="status-dot"></div>
-        Online
+    <div class="nav-actions">
+        <div class="theme-control">
+            <label for="themeSelect">Theme</label>
+            <select class="theme-select" id="themeSelect" aria-label="Choose color theme">
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+        <div class="status">
+            <div class="status-dot"></div>
+            Online
+        </div>
     </div>
 </nav>
 <main>
@@ -667,7 +740,23 @@
     const result = document.getElementById("result");
     const resultCoordinates = document.getElementById("resultCoordinates");
     const copyButton = document.getElementById("copyButton");
+    const themeSelect = document.getElementById("themeSelect");
     let mode = "overworld";
+    let copyResetTimer;
+    function getSystemTheme() {
+        return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+    function applyTheme(theme) {
+        const resolvedTheme = theme === "system" ? getSystemTheme() : theme;
+        document.documentElement.dataset.theme = resolvedTheme;
+        document.documentElement.style.colorScheme = resolvedTheme;
+        themeSelect.value = theme;
+        localStorage.setItem("virtuaUtilsTheme", theme);
+    }
+    function loadTheme() {
+        const savedTheme = localStorage.getItem("virtuaUtilsTheme") || "system";
+        applyTheme(["system", "light", "dark"].includes(savedTheme) ? savedTheme : "system");
+    }
     function formatNumber(number) {
         if (!Number.isFinite(number)) {
             return "";
@@ -722,20 +811,24 @@
             labeledValues.push(`Z: ${z}`);
         }
         if (!lettersToggle.checked) {
-            return values.join(", ");
+            return values.join(forCopy ? " " : ", ");
         }
-        return labeledValues.join(forCopy ? ", " : "  ");
+        return labeledValues.join(forCopy ? " " : "  ");
     }
-    function convertCoordinates() {
+    function convertCoordinates(animate = true) {
         const coordinates = getConvertedCoordinates();
         if (!coordinates) {
             result.classList.remove("show");
             return;
         }
         resultCoordinates.textContent = buildCoordinateText(coordinates);
-        result.classList.remove("show");
-        void result.offsetWidth;
-        result.classList.add("show");
+        if (animate) {
+            result.classList.remove("show");
+            void result.offsetWidth;
+            result.classList.add("show");
+        } else {
+            result.classList.add("show");
+        }
     }
     function updateAdvancedSettings() {
         const advancedEnabled = advancedToggle.checked;
@@ -776,7 +869,15 @@
         convertCoordinates();
     });
     [xInput, yInput, zInput].forEach((input) => {
-        input.addEventListener("input", convertCoordinates);
+        input.addEventListener("input", () => convertCoordinates(false));
+    });
+    themeSelect.addEventListener("change", () => {
+        applyTheme(themeSelect.value);
+    });
+    window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", () => {
+        if ((localStorage.getItem("virtuaUtilsTheme") || "system") === "system") {
+            applyTheme("system");
+        }
     });
     copyButton.addEventListener("click", async () => {
         const coordinates = getConvertedCoordinates();
@@ -786,19 +887,22 @@
         const copiedText = buildCoordinateText(coordinates, true);
         try {
             await navigator.clipboard.writeText(copiedText);
+            clearTimeout(copyResetTimer);
             copyButton.textContent = "✓ Copied!";
             copyButton.classList.add("copied");
-            setTimeout(() => {
+            copyResetTimer = setTimeout(() => {
                 copyButton.textContent = "Copy Coordinates";
                 copyButton.classList.remove("copied");
             }, 1500);
         } catch (error) {
+            clearTimeout(copyResetTimer);
             copyButton.textContent = "Copy failed";
-            setTimeout(() => {
+            copyResetTimer = setTimeout(() => {
                 copyButton.textContent = "Copy Coordinates";
             }, 1500);
         }
     });
+    loadTheme();
     updateAdvancedSettings();
     updateInputModes();
 </script>
