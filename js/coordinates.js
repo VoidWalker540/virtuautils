@@ -68,7 +68,6 @@ let mode = "overworld";
 
 let copyTimer = null;
 
-
 function getNumber(input) {
 
     if (input.value.trim() === "") {
@@ -82,7 +81,6 @@ function getNumber(input) {
         ? value
         : null;
 }
-
 
 function formatNumber(value) {
 
@@ -99,7 +97,6 @@ function formatNumber(value) {
         .replace(/\.?0+$/, "");
 }
 
-
 function calculate() {
 
     const x =
@@ -110,12 +107,6 @@ function calculate() {
 
     const y =
         getNumber(yInput);
-
-
-    /*
-     * Show results as soon as
-     * X OR Z has an input.
-     */
 
     if (
         x === null &&
@@ -128,11 +119,6 @@ function calculate() {
 
         return null;
     }
-
-
-    /*
-     * Convert coordinates.
-     */
 
     const convertedX =
         x === null
@@ -148,11 +134,6 @@ function calculate() {
                 ? z / 8
                 : z * 8;
 
-
-    /*
-     * Exact coordinates.
-     */
-
     const exactX =
         formatNumber(convertedX);
 
@@ -161,11 +142,6 @@ function calculate() {
 
     const exactY =
         formatNumber(y);
-
-
-    /*
-     * Block coordinates.
-     */
 
     const blockX =
         convertedX === null
@@ -182,45 +158,35 @@ function calculate() {
             ? null
             : Math.floor(y);
 
-
     /*
-     * Coordinates result.
+     * Results always display coordinate labels.
      */
 
     let coordinatesHTML = "";
 
-    if (exactX !== "") {
+    if (convertedX !== null) {
 
         coordinatesHTML +=
             `X: ${exactX}`;
 
     }
 
-    if (exactY !== "") {
+    if (y !== null) {
 
         coordinatesHTML +=
-            coordinatesHTML === ""
-                ? `Y: ${exactY}`
-                : `<br>Y: ${exactY}`;
+            `<br>Y: ${exactY}`;
 
     }
 
-    if (exactZ !== "") {
+    if (convertedZ !== null) {
 
         coordinatesHTML +=
-            coordinatesHTML === ""
-                ? `Z: ${exactZ}`
-                : `<br>Z: ${exactZ}`;
+            `<br>Z: ${exactZ}`;
 
     }
 
     resultCoordinates.innerHTML =
         coordinatesHTML;
-
-
-    /*
-     * Block result.
-     */
 
     let blockHTML = "";
 
@@ -234,84 +200,38 @@ function calculate() {
     if (blockY !== null) {
 
         blockHTML +=
-            blockHTML === ""
-                ? `Y: ${blockY}`
-                : `<br>Y: ${blockY}`;
+            `<br>Y: ${blockY}`;
 
     }
 
     if (blockZ !== null) {
 
         blockHTML +=
-            blockHTML === ""
-                ? `Z: ${blockZ}`
-                : `<br>Z: ${blockZ}`;
+            `<br>Z: ${blockZ}`;
 
     }
 
     resultBlock.innerHTML =
         blockHTML;
 
-
     /*
-     * X chunk results.
+     * Chunk and region information.
      */
 
-    if (blockX !== null) {
+    if (
+        blockX !== null &&
+        blockZ !== null
+    ) {
 
         const currentChunkX =
-            Math.floor(
-                blockX / 16
-            );
+            Math.floor(blockX / 16);
+
+        const currentChunkZ =
+            Math.floor(blockZ / 16);
 
         const currentRegionX =
             Math.floor(
                 currentChunkX / 32
-            );
-
-        const insideChunkX =
-            ((blockX % 16) + 16) % 16;
-
-        const startX =
-            currentChunkX * 16;
-
-
-        chunkX.textContent =
-            currentChunkX;
-
-        regionX.textContent =
-            currentRegionX;
-
-        localX.textContent =
-            insideChunkX;
-
-        minX.textContent =
-            startX;
-
-        maxX.textContent =
-            startX + 15;
-
-    } else {
-
-        chunkX.textContent = "—";
-        regionX.textContent = "—";
-        localX.textContent = "—";
-
-        minX.textContent = "—";
-        maxX.textContent = "—";
-
-    }
-
-
-    /*
-     * Z chunk results.
-     */
-
-    if (blockZ !== null) {
-
-        const currentChunkZ =
-            Math.floor(
-                blockZ / 16
             );
 
         const currentRegionZ =
@@ -319,21 +239,41 @@ function calculate() {
                 currentChunkZ / 32
             );
 
+        const insideChunkX =
+            ((blockX % 16) + 16) % 16;
+
         const insideChunkZ =
             ((blockZ % 16) + 16) % 16;
 
-        const startZ =
-            currentChunkZ * 16;
-
+        chunkX.textContent =
+            currentChunkX;
 
         chunkZ.textContent =
             currentChunkZ;
 
+        regionX.textContent =
+            currentRegionX;
+
         regionZ.textContent =
             currentRegionZ;
 
+        localX.textContent =
+            insideChunkX;
+
         localZ.textContent =
             insideChunkZ;
+
+        const startX =
+            currentChunkX * 16;
+
+        const startZ =
+            currentChunkZ * 16;
+
+        minX.textContent =
+            startX;
+
+        maxX.textContent =
+            startX + 15;
 
         minZ.textContent =
             startZ;
@@ -343,25 +283,31 @@ function calculate() {
 
     } else {
 
+        chunkX.textContent = "—";
         chunkZ.textContent = "—";
+
+        regionX.textContent = "—";
         regionZ.textContent = "—";
+
+        localX.textContent = "—";
         localZ.textContent = "—";
+
+        minX.textContent = "—";
+        maxX.textContent = "—";
 
         minZ.textContent = "—";
         maxZ.textContent = "—";
 
     }
 
-
     /*
-     * Show Y input.
+     * Show Y input once results exist.
      */
 
     yInputContainer.classList.add("show");
 
-
     /*
-     * Result animation.
+     * Re-run the result animation.
      */
 
     result.classList.remove("show");
@@ -369,7 +315,6 @@ function calculate() {
     void result.offsetWidth;
 
     result.classList.add("show");
-
 
     return {
 
@@ -384,7 +329,6 @@ function calculate() {
     };
 
 }
-
 
 function setMode(nextMode) {
 
@@ -402,7 +346,6 @@ function setMode(nextMode) {
 
     calculate();
 }
-
 
 function copyText(
     text,
@@ -469,7 +412,6 @@ function copyText(
 
 }
 
-
 overworldMode.addEventListener(
     "click",
     () => {
@@ -479,7 +421,6 @@ overworldMode.addEventListener(
     }
 );
 
-
 netherMode.addEventListener(
     "click",
     () => {
@@ -488,7 +429,6 @@ netherMode.addEventListener(
 
     }
 );
-
 
 [
     xInput,
@@ -503,11 +443,10 @@ netherMode.addEventListener(
 
 });
 
-
 /*
  * Copy Coordinates
  *
- * Values only.
+ * Copies only the values.
  * No X:, Y: or Z: labels.
  */
 
@@ -556,11 +495,11 @@ copyCoordinates.addEventListener(
     }
 );
 
-
 /*
  * Copy Chunk
  *
- * Requires both X and Z.
+ * Copies only:
+ * Chunk X Chunk Z
  */
 
 copyChunk.addEventListener(
@@ -596,11 +535,8 @@ copyChunk.addEventListener(
     }
 );
 
-
 /*
  * Copy /tp
- *
- * Requires both X and Z.
  */
 
 copyTp.addEventListener(
@@ -638,6 +574,3 @@ copyTp.addEventListener(
 
     }
 );
-
-
-calculate();
