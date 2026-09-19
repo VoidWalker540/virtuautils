@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta
         name="description"
@@ -14,10 +11,7 @@
 
     <title>Coordinates | VirtuaUtils</title>
 
-    <link
-        rel="stylesheet"
-        href="../../css/styles.css"
-    >
+    <link rel="stylesheet" href="../../css/styles.css">
 </head>
 
 <body>
@@ -34,7 +28,6 @@
     </div>
 
     <div class="nav-actions">
-
         <div class="theme-control">
             <label for="themeSelect">Theme</label>
 
@@ -53,7 +46,6 @@
             <div class="status-dot"></div>
             Online
         </div>
-
     </div>
 </nav>
 
@@ -113,18 +105,6 @@
             </div>
 
             <div class="input-group">
-                <label for="yInput">Y Coordinate</label>
-
-                <input
-                    id="yInput"
-                    type="number"
-                    step="any"
-                    placeholder="Optional"
-                    autocomplete="off"
-                >
-            </div>
-
-            <div class="input-group">
                 <label for="zInput">Z Coordinate</label>
 
                 <input
@@ -156,9 +136,33 @@
                     class="result-value"
                     id="coordinateResult"
                 >
-                    X: 0<br>
-                    Z: 0
+                    X: —
+                    <br>
+                    Z: —
                 </div>
+            </div>
+
+        </div>
+
+        <div
+            class="y-input-container"
+            id="yInputContainer"
+        >
+
+            <div class="input-group">
+
+                <label for="yInput">
+                    Y Coordinate
+                </label>
+
+                <input
+                    id="yInput"
+                    type="number"
+                    step="any"
+                    placeholder="Optional"
+                    autocomplete="off"
+                >
+
             </div>
 
         </div>
@@ -167,32 +171,32 @@
 
             <div class="data-card">
                 <span>Chunk X</span>
-                <strong id="chunkX">0</strong>
+                <strong id="chunkX">—</strong>
             </div>
 
             <div class="data-card">
                 <span>Chunk Z</span>
-                <strong id="chunkZ">0</strong>
+                <strong id="chunkZ">—</strong>
             </div>
 
             <div class="data-card">
                 <span>Region X</span>
-                <strong id="regionX">0</strong>
+                <strong id="regionX">—</strong>
             </div>
 
             <div class="data-card">
                 <span>Region Z</span>
-                <strong id="regionZ">0</strong>
+                <strong id="regionZ">—</strong>
             </div>
 
             <div class="data-card">
                 <span>Inside Chunk X</span>
-                <strong id="localX">0</strong>
+                <strong id="localX">—</strong>
             </div>
 
             <div class="data-card">
                 <span>Inside Chunk Z</span>
-                <strong id="localZ">0</strong>
+                <strong id="localZ">—</strong>
             </div>
 
         </div>
@@ -203,7 +207,7 @@
                 <span>X Boundary</span>
 
                 <strong id="xBoundary">
-                    0 → 15
+                    —
                 </strong>
             </div>
 
@@ -211,7 +215,7 @@
                 <span>Z Boundary</span>
 
                 <strong id="zBoundary">
-                    0 → 15
+                    —
                 </strong>
             </div>
 
