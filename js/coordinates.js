@@ -1,6 +1,14 @@
-const xInput = document.getElementById("xInput");
-const yInput = document.getElementById("yInput");
-const zInput = document.getElementById("zInput");
+const xInput =
+    document.getElementById("xInput");
+
+const zInput =
+    document.getElementById("zInput");
+
+const yInput =
+    document.getElementById("yInput");
+
+const yInputContainer =
+    document.getElementById("yInputContainer");
 
 const overworldToNether =
     document.getElementById("overworldToNether");
@@ -63,9 +71,14 @@ function formatNumber(value) {
 
 function calculate() {
 
-    const rawX = parseFloat(xInput.value);
-    const rawY = parseFloat(yInput.value);
-    const rawZ = parseFloat(zInput.value);
+    const rawX =
+        parseFloat(xInput.value);
+
+    const rawZ =
+        parseFloat(zInput.value);
+
+    const rawY =
+        parseFloat(yInput.value);
 
     if (
         Number.isNaN(rawX) ||
@@ -89,8 +102,11 @@ function calculate() {
 
     }
 
-    const blockX = Math.floor(x);
-    const blockZ = Math.floor(z);
+    const blockX =
+        Math.floor(x);
+
+    const blockZ =
+        Math.floor(z);
 
     const blockY =
         Number.isNaN(rawY)
@@ -158,12 +174,16 @@ function calculate() {
 
 function updateResults() {
 
-    const data = calculate();
+    const data =
+        calculate();
 
     if (!data) {
 
         coordinateResult.innerHTML =
             "X: —<br>Z: —";
+
+        yInputContainer.style.display =
+            "none";
 
         chunkX.textContent = "—";
         chunkZ.textContent = "—";
@@ -181,18 +201,22 @@ function updateResults() {
 
     }
 
+    yInputContainer.style.display =
+        "block";
+
     const formattedX =
         formatNumber(data.x);
 
     const formattedZ =
         formatNumber(data.z);
 
-    let coordinateHTML =
-        `X: ${formattedX}<br>Z: ${formattedZ}`;
+    let result =
+        `X: ${formattedX}<br>` +
+        `Z: ${formattedZ}`;
 
     if (data.blockY !== null) {
 
-        coordinateHTML =
+        result =
             `X: ${formattedX}<br>` +
             `Y: ${formatNumber(data.blockY)}<br>` +
             `Z: ${formattedZ}`;
@@ -200,7 +224,7 @@ function updateResults() {
     }
 
     coordinateResult.innerHTML =
-        coordinateHTML;
+        result;
 
     chunkX.textContent =
         data.chunkX;
@@ -231,7 +255,8 @@ function updateResults() {
 
 function getCopyCoordinates() {
 
-    const data = calculate();
+    const data =
+        calculate();
 
     if (!data) {
         return "";
@@ -257,7 +282,8 @@ function getCopyCoordinates() {
 
 function getCopyChunk() {
 
-    const data = calculate();
+    const data =
+        calculate();
 
     if (!data) {
         return "";
@@ -270,7 +296,8 @@ function getCopyChunk() {
 
 function getCopyTp() {
 
-    const data = calculate();
+    const data =
+        calculate();
 
     if (!data) {
         return "";
@@ -303,20 +330,31 @@ async function copyText(
         return;
     }
 
-    await navigator.clipboard.writeText(text);
+    try {
 
-    const originalText =
-        button.textContent;
+        await navigator.clipboard.writeText(text);
 
-    button.textContent =
-        "Copied!";
-
-    setTimeout(() => {
+        const originalText =
+            button.textContent;
 
         button.textContent =
-            originalText;
+            "Copied!";
 
-    }, 1200);
+        setTimeout(() => {
+
+            button.textContent =
+                originalText;
+
+        }, 1200);
+
+    } catch (error) {
+
+        console.error(
+            "Failed to copy:",
+            error
+        );
+
+    }
 
 }
 
@@ -327,8 +365,13 @@ overworldToNether.addEventListener(
 
         mode = "overworld";
 
-        overworldToNether.classList.add("active");
-        netherToOverworld.classList.remove("active");
+        overworldToNether.classList.add(
+            "active"
+        );
+
+        netherToOverworld.classList.remove(
+            "active"
+        );
 
         updateResults();
 
@@ -342,8 +385,13 @@ netherToOverworld.addEventListener(
 
         mode = "nether";
 
-        netherToOverworld.classList.add("active");
-        overworldToNether.classList.remove("active");
+        netherToOverworld.classList.add(
+            "active"
+        );
+
+        overworldToNether.classList.remove(
+            "active"
+        );
 
         updateResults();
 
@@ -353,8 +401,8 @@ netherToOverworld.addEventListener(
 
 [
     xInput,
-    yInput,
-    zInput
+    zInput,
+    yInput
 ].forEach(input => {
 
     input.addEventListener(
@@ -403,5 +451,8 @@ copyTp.addEventListener(
     }
 );
 
+
+yInputContainer.style.display =
+    "none";
 
 updateResults();
