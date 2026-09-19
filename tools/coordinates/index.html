@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -12,87 +9,52 @@
 
     <meta
         name="description"
-        content="Convert Minecraft Overworld and Nether coordinates and calculate exact positions, blocks, chunks and regions."
+        content="Convert Minecraft Overworld and Nether coordinates and calculate chunk and region information."
     >
 
-    <title>Minecraft Coordinate Converter | VirtuaUtils</title>
+    <title>Coordinates | VirtuaUtils</title>
 
     <link
         rel="stylesheet"
         href="../../css/styles.css"
     >
-
 </head>
 
 <body>
 
 <nav>
-
-    <a
-        class="logo"
-        href="../../index.html"
-    >
+    <a class="logo" href="../../index.html">
         Virtua<span>Utils</span>
     </a>
 
     <div class="nav-links">
-
-        <a
-            class="active"
-            href="../coordinates/"
-        >
-            Coordinates
-        </a>
-
-        <a href="../portal-linker/">
-            Nether & Portals
-        </a>
-
-        <a href="../travel-time/">
-            Travel
-        </a>
-
+        <a href="../coordinates/">Coordinates</a>
+        <a href="../portal-linker/">Nether & Portals</a>
+        <a href="../travel-time/">Travel</a>
     </div>
 
     <div class="nav-actions">
 
         <div class="theme-control">
-
-            <label for="themeSelect">
-                Theme
-            </label>
+            <label for="themeSelect">Theme</label>
 
             <select
                 class="theme-select"
                 id="themeSelect"
+                aria-label="Choose color theme"
             >
-
-                <option value="system">
-                    System
-                </option>
-
-                <option value="light">
-                    Light
-                </option>
-
-                <option value="dark">
-                    Dark
-                </option>
-
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
             </select>
-
         </div>
 
         <div class="status">
-
             <div class="status-dot"></div>
-
             Online
-
         </div>
 
     </div>
-
 </nav>
 
 <main>
@@ -108,8 +70,8 @@
         </h1>
 
         <p>
-            Convert between the Overworld and Nether,
-            then see the exact position, block, chunk and region.
+            Convert between Overworld and Nether coordinates
+            and get detailed chunk information.
         </p>
 
     </section>
@@ -119,16 +81,16 @@
         <div class="mode-buttons">
 
             <button
-                class="mode active"
-                id="overworldMode"
+                class="mode-button active"
+                id="overworldToNether"
                 type="button"
             >
                 Overworld → Nether
             </button>
 
             <button
-                class="mode"
-                id="netherMode"
+                class="mode-button"
+                id="netherToOverworld"
                 type="button"
             >
                 Nether → Overworld
@@ -136,335 +98,156 @@
 
         </div>
 
-        <div class="coordinates">
+        <div class="input-grid">
 
-            <div>
-
-                <label for="x">
-                    X Coordinate
-                </label>
+            <div class="input-group">
+                <label for="xInput">X Coordinate</label>
 
                 <input
-                    id="x"
+                    id="xInput"
                     type="number"
-                    inputmode="decimal"
-                    placeholder="e.g. 1200"
+                    step="any"
+                    placeholder="0"
+                    autocomplete="off"
                 >
-
             </div>
 
-            <div>
-
-                <label for="z">
-                    Z Coordinate
-                </label>
+            <div class="input-group">
+                <label for="yInput">Y Coordinate</label>
 
                 <input
-                    id="z"
+                    id="yInput"
                     type="number"
-                    inputmode="decimal"
-                    placeholder="e.g. -800"
+                    step="any"
+                    placeholder="Optional"
+                    autocomplete="off"
                 >
+            </div>
 
+            <div class="input-group">
+                <label for="zInput">Z Coordinate</label>
+
+                <input
+                    id="zInput"
+                    type="number"
+                    step="any"
+                    placeholder="0"
+                    autocomplete="off"
+                >
             </div>
 
         </div>
 
-        <div
-            class="advanced-settings"
-        >
+    </section>
 
-            <div class="advanced-header">
+    <section
+        class="result"
+        id="result"
+    >
 
-                <div class="advanced-copy">
+        <div class="result-header">
 
-                    <div class="advanced-title">
-                        Advanced options
-                    </div>
-
-                    <div class="advanced-description">
-                        Show exact positions, coordinate labels and Y.
-                    </div>
-
+            <div>
+                <div class="result-label">
+                    Coordinates
                 </div>
-
-                <label
-                    class="switch"
-                    aria-label="Enable advanced options"
-                >
-
-                    <input
-                        type="checkbox"
-                        id="advancedToggle"
-                    >
-
-                    <span
-                        class="switch-track"
-                    ></span>
-
-                </label>
-
-            </div>
-
-            <div
-                class="advanced-options"
-                id="advancedOptions"
-            >
 
                 <div
-                    class="advanced-options-inner"
+                    class="result-value"
+                    id="coordinateResult"
                 >
-
-                    <label class="setting">
-
-                        <input
-                            type="checkbox"
-                            id="exactToggle"
-                        >
-
-                        Exact position
-
-                    </label>
-
-                    <label class="setting">
-
-                        <input
-                            type="checkbox"
-                            id="lettersToggle"
-                        >
-
-                        Include coordinate labels
-
-                    </label>
-
-                    <label class="setting">
-
-                        <input
-                            type="checkbox"
-                            id="yToggle"
-                        >
-
-                        Include Y coordinate
-
-                    </label>
-
-                    <div class="setting-note">
-
-                        Exact position shows the mathematical
-                        coordinate. Block shows the Minecraft
-                        block position.
-
-                    </div>
-
+                    X: 0<br>
+                    Z: 0
                 </div>
-
             </div>
 
         </div>
 
-        <div
-            class="y-input"
-            id="yInputContainer"
-        >
+        <div class="data-grid">
 
-            <label for="y">
-                Y Coordinate
-            </label>
+            <div class="data-card">
+                <span>Chunk X</span>
+                <strong id="chunkX">0</strong>
+            </div>
 
-            <input
-                id="y"
-                type="number"
-                inputmode="decimal"
-                placeholder="e.g. 64"
-            >
+            <div class="data-card">
+                <span>Chunk Z</span>
+                <strong id="chunkZ">0</strong>
+            </div>
+
+            <div class="data-card">
+                <span>Region X</span>
+                <strong id="regionX">0</strong>
+            </div>
+
+            <div class="data-card">
+                <span>Region Z</span>
+                <strong id="regionZ">0</strong>
+            </div>
+
+            <div class="data-card">
+                <span>Inside Chunk X</span>
+                <strong id="localX">0</strong>
+            </div>
+
+            <div class="data-card">
+                <span>Inside Chunk Z</span>
+                <strong id="localZ">0</strong>
+            </div>
 
         </div>
 
-        <div
-            class="result"
-            id="result"
-            aria-live="polite"
-        >
+        <div class="chunk-boundaries">
 
-            <div class="result-section">
+            <div class="boundary-card">
+                <span>X Boundary</span>
 
-                <div class="result-title">
-                    Exact position
-                </div>
-
-                <div
-                    class="result-coordinates"
-                    id="resultExact"
-                >
-                    0 0 0
-                </div>
-
-            </div>
-
-            <div class="result-section">
-
-                <div class="result-title">
-                    Block
-                </div>
-
-                <div
-                    class="result-coordinates"
-                    id="resultBlock"
-                >
-                    0 0 0
-                </div>
-
-            </div>
-
-            <div class="data-grid">
-
-                <div class="data-card">
-
-                    <span>
-                        Chunk X
-                    </span>
-
-                    <strong id="chunkX">
-                        0
-                    </strong>
-
-                </div>
-
-                <div class="data-card">
-
-                    <span>
-                        Chunk Z
-                    </span>
-
-                    <strong id="chunkZ">
-                        0
-                    </strong>
-
-                </div>
-
-                <div class="data-card">
-
-                    <span>
-                        Region X
-                    </span>
-
-                    <strong id="regionX">
-                        0
-                    </strong>
-
-                </div>
-
-                <div class="data-card">
-
-                    <span>
-                        Region Z
-                    </span>
-
-                    <strong id="regionZ">
-                        0
-                    </strong>
-
-                </div>
-
-                <div class="data-card">
-
-                    <span>
-                        Inside Chunk X
-                    </span>
-
-                    <strong id="localX">
-                        0
-                    </strong>
-
-                </div>
-
-                <div class="data-card">
-
-                    <span>
-                        Inside Chunk Z
-                    </span>
-
-                    <strong id="localZ">
-                        0
-                    </strong>
-
-                </div>
-
-            </div>
-
-            <div class="chunk-boundary">
-
-                <div class="result-title">
-                    Chunk boundaries
-                </div>
-
-                <div class="boundary-row">
-
-                    <span>
-                        X:
-                        <strong id="minX">
-                            0
-                        </strong>
-                        →
-                        <strong id="maxX">
-                            15
-                        </strong>
-                    </span>
-
-                    <span>
-                        Z:
-                        <strong id="minZ">
-                            0
-                        </strong>
-                        →
-                        <strong id="maxZ">
-                            15
-                        </strong>
-                    </span>
-
-                </div>
-
-            </div>
-
-            <div class="copy-actions">
-
-                <button
-                    class="copy-button"
-                    id="copyCoordinates"
-                    type="button"
-                >
-                    Copy exact position
-                </button>
-
-                <button
-                    class="copy-button"
-                    id="copyBlock"
-                    type="button"
-                >
-                    Copy Block
-                </button>
-
-                <button
-                    class="copy-button"
-                    id="copyTp"
-                    type="button"
-                >
-                    Copy /tp
-                </button>
-
-            </div>
-
-            <div class="note">
-
-                <strong>
-                    Y stays the same
+                <strong id="xBoundary">
+                    0 → 15
                 </strong>
-                between the Overworld and Nether.
-
-                X and Z use the standard 8:1 coordinate scale.
-
             </div>
 
+            <div class="boundary-card">
+                <span>Z Boundary</span>
+
+                <strong id="zBoundary">
+                    0 → 15
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="copy-actions">
+
+            <button
+                class="copy-button"
+                id="copyCoordinates"
+                type="button"
+            >
+                Copy Coordinates
+            </button>
+
+            <button
+                class="copy-button"
+                id="copyChunk"
+                type="button"
+            >
+                Copy Chunk
+            </button>
+
+            <button
+                class="copy-button"
+                id="copyTp"
+                type="button"
+            >
+                Copy /tp
+            </button>
+
+        </div>
+
+        <div class="note">
+            X and Z use the standard 8:1 Overworld/Nether scale.
+            Y remains unchanged.
         </div>
 
     </section>
@@ -479,5 +262,4 @@
 <script src="../../js/coordinates.js"></script>
 
 </body>
-
 </html>
