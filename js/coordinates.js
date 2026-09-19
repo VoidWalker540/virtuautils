@@ -111,6 +111,11 @@ function calculate() {
     const y =
         getNumber(yInput);
 
+    /*
+     * Results appear as soon as
+     * X or Z has an input.
+     */
+
     if (
         x === null &&
         z === null
@@ -122,6 +127,7 @@ function calculate() {
 
         return null;
     }
+
 
     const convertedX =
         x === null
@@ -137,6 +143,7 @@ function calculate() {
                 ? z / 8
                 : z * 8;
 
+
     const exactX =
         formatNumber(convertedX);
 
@@ -145,6 +152,7 @@ function calculate() {
 
     const exactY =
         formatNumber(y);
+
 
     const blockX =
         convertedX === null
@@ -161,8 +169,9 @@ function calculate() {
             ? null
             : Math.floor(y);
 
+
     /*
-     * Results always display coordinate labels.
+     * Coordinates
      */
 
     let coordinatesHTML = "";
@@ -192,6 +201,10 @@ function calculate() {
         coordinatesHTML;
 
 
+    /*
+     * Block
+     */
+
     let blockHTML = "";
 
     if (blockX !== null) {
@@ -220,61 +233,35 @@ function calculate() {
 
 
     /*
-     * Chunk and region information.
+     * X chunk and region information.
      */
 
-    if (
-        blockX !== null &&
-        blockZ !== null
-    ) {
+    if (blockX !== null) {
 
         const currentChunkX =
             Math.floor(blockX / 16);
-
-        const currentChunkZ =
-            Math.floor(blockZ / 16);
 
         const currentRegionX =
             Math.floor(
                 currentChunkX / 32
             );
 
-        const currentRegionZ =
-            Math.floor(
-                currentChunkZ / 32
-            );
-
         const insideChunkX =
             ((blockX % 16) + 16) % 16;
-
-        const insideChunkZ =
-            ((blockZ % 16) + 16) % 16;
 
 
         chunkX.textContent =
             currentChunkX;
 
-        chunkZ.textContent =
-            currentChunkZ;
-
         regionX.textContent =
             currentRegionX;
-
-        regionZ.textContent =
-            currentRegionZ;
 
         localX.textContent =
             insideChunkX;
 
-        localZ.textContent =
-            insideChunkZ;
-
 
         const startX =
             currentChunkX * 16;
-
-        const startZ =
-            currentChunkZ * 16;
 
 
         minX.textContent =
@@ -282,6 +269,50 @@ function calculate() {
 
         maxX.textContent =
             startX + 15;
+
+    } else {
+
+        chunkX.textContent = "—";
+        regionX.textContent = "—";
+        localX.textContent = "—";
+
+        minX.textContent = "—";
+        maxX.textContent = "—";
+
+    }
+
+
+    /*
+     * Z chunk and region information.
+     */
+
+    if (blockZ !== null) {
+
+        const currentChunkZ =
+            Math.floor(blockZ / 16);
+
+        const currentRegionZ =
+            Math.floor(
+                currentChunkZ / 32
+            );
+
+        const insideChunkZ =
+            ((blockZ % 16) + 16) % 16;
+
+
+        chunkZ.textContent =
+            currentChunkZ;
+
+        regionZ.textContent =
+            currentRegionZ;
+
+        localZ.textContent =
+            insideChunkZ;
+
+
+        const startZ =
+            currentChunkZ * 16;
+
 
         minZ.textContent =
             startZ;
@@ -291,17 +322,9 @@ function calculate() {
 
     } else {
 
-        chunkX.textContent = "—";
         chunkZ.textContent = "—";
-
-        regionX.textContent = "—";
         regionZ.textContent = "—";
-
-        localX.textContent = "—";
         localZ.textContent = "—";
-
-        minX.textContent = "—";
-        maxX.textContent = "—";
 
         minZ.textContent = "—";
         maxZ.textContent = "—";
@@ -317,7 +340,7 @@ function calculate() {
 
 
     /*
-     * Re-run the result animation.
+     * Re-run result animation.
      */
 
     result.classList.remove("show");
@@ -516,7 +539,7 @@ copyCoordinates.addEventListener(
 /*
  * Copy Chunk
  *
- * Copies only:
+ * Copies:
  * Chunk X Chunk Z
  */
 
@@ -593,3 +616,6 @@ copyTp.addEventListener(
 
     }
 );
+
+
+calculate();
