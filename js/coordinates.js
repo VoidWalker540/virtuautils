@@ -1,44 +1,15 @@
-const overworldMode =
-    document.getElementById("overworldMode");
+const xInput = document.getElementById("xInput");
+const yInput = document.getElementById("yInput");
+const zInput = document.getElementById("zInput");
 
-const netherMode =
-    document.getElementById("netherMode");
+const overworldToNether =
+    document.getElementById("overworldToNether");
 
-const xInput =
-    document.getElementById("x");
+const netherToOverworld =
+    document.getElementById("netherToOverworld");
 
-const yInput =
-    document.getElementById("y");
-
-const zInput =
-    document.getElementById("z");
-
-const advancedToggle =
-    document.getElementById("advancedToggle");
-
-const advancedOptions =
-    document.getElementById("advancedOptions");
-
-const exactToggle =
-    document.getElementById("exactToggle");
-
-const lettersToggle =
-    document.getElementById("lettersToggle");
-
-const yToggle =
-    document.getElementById("yToggle");
-
-const yInputContainer =
-    document.getElementById("yInputContainer");
-
-const result =
-    document.getElementById("result");
-
-const resultExact =
-    document.getElementById("resultExact");
-
-const resultBlock =
-    document.getElementById("resultBlock");
+const coordinateResult =
+    document.getElementById("coordinateResult");
 
 const chunkX =
     document.getElementById("chunkX");
@@ -58,263 +29,141 @@ const localX =
 const localZ =
     document.getElementById("localZ");
 
-const minX =
-    document.getElementById("minX");
+const xBoundary =
+    document.getElementById("xBoundary");
 
-const maxX =
-    document.getElementById("maxX");
-
-const minZ =
-    document.getElementById("minZ");
-
-const maxZ =
-    document.getElementById("maxZ");
+const zBoundary =
+    document.getElementById("zBoundary");
 
 const copyCoordinates =
     document.getElementById("copyCoordinates");
 
-const copyBlock =
-    document.getElementById("copyBlock");
+const copyChunk =
+    document.getElementById("copyChunk");
 
 const copyTp =
     document.getElementById("copyTp");
 
+
 let mode = "overworld";
 
-let copyTimer = null;
-
-function getNumber(input) {
-
-    if (input.value.trim() === "") {
-        return null;
-    }
-
-    const value =
-        Number(input.value);
-
-    return Number.isFinite(value)
-        ? value
-        : null;
-}
 
 function formatNumber(value) {
 
-    if (value === null) {
-        return "";
-    }
-
     if (Number.isInteger(value)) {
-        return String(value);
+        return value.toString();
     }
 
     return value
         .toFixed(6)
         .replace(/\.?0+$/, "");
+
 }
 
-function formatBlock(value) {
-
-    if (value === null) {
-        return "";
-    }
-
-    return String(
-        Math.floor(value)
-    );
-}
-
-function buildText(
-    x,
-    y,
-    z,
-    labels
-) {
-
-    const values = [];
-
-    if (x !== null) {
-
-        values.push(
-            labels
-                ? `X: ${x}`
-                : String(x)
-        );
-
-    }
-
-    if (y !== null) {
-
-        values.push(
-            labels
-                ? `Y: ${y}`
-                : String(y)
-        );
-
-    }
-
-    if (z !== null) {
-
-        values.push(
-            labels
-                ? `Z: ${z}`
-                : String(z)
-        );
-
-    }
-
-    return values.join(
-        labels
-            ? "  "
-            : " "
-    );
-}
 
 function calculate() {
 
-    const x =
-        getNumber(xInput);
-
-    const z =
-        getNumber(zInput);
-
-    const y =
-        advancedToggle.checked &&
-        yToggle.checked
-            ? getNumber(yInput)
-            : null;
+    const rawX = parseFloat(xInput.value);
+    const rawY = parseFloat(yInput.value);
+    const rawZ = parseFloat(zInput.value);
 
     if (
-        x === null &&
-        z === null &&
-        y === null
+        Number.isNaN(rawX) ||
+        Number.isNaN(rawZ)
     ) {
-
-        result.classList.remove("show");
-
         return null;
     }
 
-    const convertedX =
-        x === null
-            ? null
-            : mode === "overworld"
-                ? x / 8
-                : x * 8;
+    let x;
+    let z;
 
-    const convertedZ =
-        z === null
-            ? null
-            : mode === "overworld"
-                ? z / 8
-                : z * 8;
+    if (mode === "overworld") {
 
-    const exactX =
-        formatNumber(convertedX);
-
-    const exactZ =
-        formatNumber(convertedZ);
-
-    const exactY =
-        formatNumber(y);
-
-    const blockX =
-        convertedX === null
-            ? null
-            : Math.floor(convertedX);
-
-    const blockZ =
-        convertedZ === null
-            ? null
-            : Math.floor(convertedZ);
-
-    const blockY =
-        y === null
-            ? null
-            : Math.floor(y);
-
-    const labels =
-        lettersToggle.checked;
-
-    resultExact.textContent =
-        buildText(
-            exactX || null,
-            exactY || null,
-            exactZ || null,
-            labels
-        );
-
-    resultBlock.textContent =
-        buildText(
-            blockX,
-            blockY,
-            blockZ,
-            labels
-        );
-
-    if (
-        blockX !== null &&
-        blockZ !== null
-    ) {
-
-        const currentChunkX =
-            Math.floor(blockX / 16);
-
-        const currentChunkZ =
-            Math.floor(blockZ / 16);
-
-        const currentRegionX =
-            Math.floor(
-                currentChunkX / 32
-            );
-
-        const currentRegionZ =
-            Math.floor(
-                currentChunkZ / 32
-            );
-
-        const insideChunkX =
-            ((blockX % 16) + 16) % 16;
-
-        const insideChunkZ =
-            ((blockZ % 16) + 16) % 16;
-
-        chunkX.textContent =
-            currentChunkX;
-
-        chunkZ.textContent =
-            currentChunkZ;
-
-        regionX.textContent =
-            currentRegionX;
-
-        regionZ.textContent =
-            currentRegionZ;
-
-        localX.textContent =
-            insideChunkX;
-
-        localZ.textContent =
-            insideChunkZ;
-
-        const startX =
-            currentChunkX * 16;
-
-        const startZ =
-            currentChunkZ * 16;
-
-        minX.textContent =
-            startX;
-
-        maxX.textContent =
-            startX + 15;
-
-        minZ.textContent =
-            startZ;
-
-        maxZ.textContent =
-            startZ + 15;
+        x = rawX / 8;
+        z = rawZ / 8;
 
     } else {
+
+        x = rawX * 8;
+        z = rawZ * 8;
+
+    }
+
+    const blockX = Math.floor(x);
+    const blockZ = Math.floor(z);
+
+    const blockY =
+        Number.isNaN(rawY)
+            ? null
+            : Math.floor(rawY);
+
+    const calculatedChunkX =
+        Math.floor(blockX / 16);
+
+    const calculatedChunkZ =
+        Math.floor(blockZ / 16);
+
+    const calculatedRegionX =
+        Math.floor(calculatedChunkX / 32);
+
+    const calculatedRegionZ =
+        Math.floor(calculatedChunkZ / 32);
+
+    const calculatedLocalX =
+        ((blockX % 16) + 16) % 16;
+
+    const calculatedLocalZ =
+        ((blockZ % 16) + 16) % 16;
+
+    const minX =
+        calculatedChunkX * 16;
+
+    const maxX =
+        minX + 15;
+
+    const minZ =
+        calculatedChunkZ * 16;
+
+    const maxZ =
+        minZ + 15;
+
+    return {
+
+        x,
+        z,
+
+        blockX,
+        blockZ,
+        blockY,
+
+        chunkX: calculatedChunkX,
+        chunkZ: calculatedChunkZ,
+
+        regionX: calculatedRegionX,
+        regionZ: calculatedRegionZ,
+
+        localX: calculatedLocalX,
+        localZ: calculatedLocalZ,
+
+        minX,
+        maxX,
+
+        minZ,
+        maxZ
+
+    };
+
+}
+
+
+function updateResults() {
+
+    const data = calculate();
+
+    if (!data) {
+
+        coordinateResult.innerHTML =
+            "X: —<br>Z: —";
 
         chunkX.textContent = "—";
         chunkZ.textContent = "—";
@@ -325,88 +174,127 @@ function calculate() {
         localX.textContent = "—";
         localZ.textContent = "—";
 
-        minX.textContent = "—";
-        maxX.textContent = "—";
+        xBoundary.textContent = "—";
+        zBoundary.textContent = "—";
 
-        minZ.textContent = "—";
-        maxZ.textContent = "—";
+        return;
+
     }
 
-    result.classList.remove("show");
+    const formattedX =
+        formatNumber(data.x);
 
-    void result.offsetWidth;
+    const formattedZ =
+        formatNumber(data.z);
 
-    result.classList.add("show");
+    let coordinateHTML =
+        `X: ${formattedX}<br>Z: ${formattedZ}`;
 
-    return {
-        exactX,
-        exactY,
-        exactZ,
-        blockX,
-        blockY,
-        blockZ
-    };
+    if (data.blockY !== null) {
+
+        coordinateHTML =
+            `X: ${formattedX}<br>` +
+            `Y: ${formatNumber(data.blockY)}<br>` +
+            `Z: ${formattedZ}`;
+
+    }
+
+    coordinateResult.innerHTML =
+        coordinateHTML;
+
+    chunkX.textContent =
+        data.chunkX;
+
+    chunkZ.textContent =
+        data.chunkZ;
+
+    regionX.textContent =
+        data.regionX;
+
+    regionZ.textContent =
+        data.regionZ;
+
+    localX.textContent =
+        data.localX;
+
+    localZ.textContent =
+        data.localZ;
+
+    xBoundary.textContent =
+        `${data.minX} → ${data.maxX}`;
+
+    zBoundary.textContent =
+        `${data.minZ} → ${data.maxZ}`;
+
 }
 
-function setMode(nextMode) {
 
-    mode = nextMode;
+function getCopyCoordinates() {
 
-    overworldMode.classList.toggle(
-        "active",
+    const data = calculate();
+
+    if (!data) {
+        return "";
+    }
+
+    if (data.blockY !== null) {
+
+        return [
+            formatNumber(data.x),
+            formatNumber(data.blockY),
+            formatNumber(data.z)
+        ].join(" ");
+
+    }
+
+    return [
+        formatNumber(data.x),
+        formatNumber(data.z)
+    ].join(" ");
+
+}
+
+
+function getCopyChunk() {
+
+    const data = calculate();
+
+    if (!data) {
+        return "";
+    }
+
+    return `${data.chunkX} ${data.chunkZ}`;
+
+}
+
+
+function getCopyTp() {
+
+    const data = calculate();
+
+    if (!data) {
+        return "";
+    }
+
+    const targetDimension =
         mode === "overworld"
+            ? "minecraft:the_nether"
+            : "minecraft:overworld";
+
+    const y =
+        data.blockY === null
+            ? "~"
+            : data.blockY;
+
+    return (
+        `/execute in ${targetDimension} run tp @s ` +
+        `${data.blockX} ${y} ${data.blockZ}`
     );
 
-    netherMode.classList.toggle(
-        "active",
-        mode === "nether"
-    );
-
-    calculate();
 }
 
-function showAdvanced() {
 
-    const enabled =
-        advancedToggle.checked;
-
-    advancedOptions.classList.toggle(
-        "show",
-        enabled
-    );
-
-    yInputContainer.classList.toggle(
-        "show",
-        enabled &&
-        yToggle.checked
-    );
-
-    if (!enabled) {
-        yInput.value = "";
-    }
-
-    calculate();
-}
-
-function showY() {
-
-    const visible =
-        advancedToggle.checked &&
-        yToggle.checked;
-
-    yInputContainer.classList.toggle(
-        "show",
-        visible
-    );
-
-    if (!yToggle.checked) {
-        yInput.value = "";
-    }
-
-    calculate();
-}
-
-function copyText(
+async function copyText(
     text,
     button
 ) {
@@ -415,169 +303,105 @@ function copyText(
         return;
     }
 
-    navigator.clipboard
-        .writeText(text)
-        .then(() => {
+    await navigator.clipboard.writeText(text);
 
-            clearTimeout(
-                copyTimer
-            );
+    const originalText =
+        button.textContent;
 
-            const original =
-                button.textContent;
+    button.textContent =
+        "Copied!";
 
-            button.textContent =
-                "✓ Copied!";
+    setTimeout(() => {
 
-            button.classList.add(
-                "copied"
-            );
+        button.textContent =
+            originalText;
 
-            copyTimer =
-                setTimeout(() => {
+    }, 1200);
 
-                    button.textContent =
-                        original;
-
-                    button.classList.remove(
-                        "copied"
-                    );
-
-                }, 1500);
-
-        })
-        .catch(() => {
-
-            button.textContent =
-                "Copy failed";
-
-            clearTimeout(
-                copyTimer
-            );
-
-            copyTimer =
-                setTimeout(() => {
-
-                    button.textContent =
-                        "Copy";
-
-                }, 1500);
-
-        });
 }
 
-overworldMode.addEventListener(
+
+overworldToNether.addEventListener(
     "click",
-    () => setMode("overworld")
+    () => {
+
+        mode = "overworld";
+
+        overworldToNether.classList.add("active");
+        netherToOverworld.classList.remove("active");
+
+        updateResults();
+
+    }
 );
 
-netherMode.addEventListener(
+
+netherToOverworld.addEventListener(
     "click",
-    () => setMode("nether")
+    () => {
+
+        mode = "nether";
+
+        netherToOverworld.classList.add("active");
+        overworldToNether.classList.remove("active");
+
+        updateResults();
+
+    }
 );
 
-advancedToggle.addEventListener(
-    "change",
-    showAdvanced
-);
-
-yToggle.addEventListener(
-    "change",
-    showY
-);
 
 [
     xInput,
     yInput,
-    zInput,
-    exactToggle,
-    lettersToggle
-].forEach(element => {
+    zInput
+].forEach(input => {
 
-    element.addEventListener(
+    input.addEventListener(
         "input",
-        calculate
-    );
-
-    element.addEventListener(
-        "change",
-        calculate
+        updateResults
     );
 
 });
+
 
 copyCoordinates.addEventListener(
     "click",
     () => {
 
-        const data =
-            calculate();
-
-        if (!data) {
-            return;
-        }
-
         copyText(
-            resultExact.textContent.trim(),
+            getCopyCoordinates(),
             copyCoordinates
         );
 
     }
 );
 
-copyBlock.addEventListener(
+
+copyChunk.addEventListener(
     "click",
     () => {
 
-        const data =
-            calculate();
-
-        if (!data) {
-            return;
-        }
-
         copyText(
-            resultBlock.textContent.trim(),
-            copyBlock
+            getCopyChunk(),
+            copyChunk
         );
 
     }
 );
 
+
 copyTp.addEventListener(
     "click",
     () => {
 
-        const data =
-            calculate();
-
-        if (
-            !data ||
-            data.blockX === null ||
-            data.blockZ === null
-        ) {
-            return;
-        }
-
-        const targetDimension =
-            mode === "overworld"
-                ? "minecraft:the_nether"
-                : "minecraft:overworld";
-
-        const y =
-            data.blockY === null
-                ? "~"
-                : data.blockY;
-
-        const command =
-            `/execute in ${targetDimension} run tp @s ${data.blockX} ${y} ${data.blockZ}`;
-
         copyText(
-            command,
+            getCopyTp(),
             copyTp
         );
 
     }
 );
 
-calculate();
+
+updateResults();
